@@ -2,7 +2,7 @@
 
 <template>
   <main>
-    <div>
+    <div v-for="x in 4">
       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut suscipit orci ut dictum
       pellentesque. Proin porttitor, est eu efficitur maximus, augue mi tincidunt turpis, sit amet
       rutrum mauris orci nec risus. Fusce ac accumsan tortor, id posuere nulla. Phasellus bibendum

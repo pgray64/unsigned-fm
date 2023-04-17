@@ -4,8 +4,8 @@ import TopNav from '@/components/shared/top-nav.vue'
 </script>
 
 <template>
-  <top-nav />
-  <div class="container mx-auto">
+  <div class="container px-3 pb-3 md:px-2 mx-auto">
+    <top-nav />
     <RouterView />
   </div>
 </template>

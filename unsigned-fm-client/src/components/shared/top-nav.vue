@@ -1,18 +1,18 @@
 <template>
-  <va-navbar color="#ffffff" class="mb-3 border-b border-solid border-gray-300 b">
+  <va-navbar color="#ffffff" class="px-0 mb-3">
     <template #left>
       <va-navbar-item class="logo">
         <img src="../../assets/logo-painted.svg" width="218" height="37" />
       </va-navbar-item>
     </template>
     <template #right>
-      <va-navbar-item class="d-flex align-center mt-2 mb-2 md:mt-0 md:mb-0">
+      <va-navbar-item class="d-flex align-center mt-3 mb-2 md:mt-0 md:mb-0">
         <va-button to="/" icon="music_note" color="info" gradient>Discover</va-button>
       </va-navbar-item>
-      <va-navbar-item class="mt-2 mb-2 md:mt-0 md:mb-0">
+      <va-navbar-item class="mt-3 mb-2 md:mt-0 md:mb-0">
         <va-button to="/" icon="add">Submit</va-button>
       </va-navbar-item>
-      <va-navbar-item class="d-flex align-center mt-2 mb-2 md:mt-0 md:mb-0">
+      <va-navbar-item class="d-flex align-center mt-3 mb-2 md:mt-0 md:mb-0">
         <va-button-dropdown to="/" preset="secondary" border-color="primary" label="Profile">
           <div class="p-2 mb-2">
             <va-button to="/" preset="plain">Settings</va-button>
