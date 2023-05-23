@@ -14,8 +14,9 @@ export function CsrfMiddleware(
     return;
   }
   // Check csrf token
-  const cookieValue = req.cookies[cookieName]?.value;
+  const cookieValue = req.cookies[cookieName];
   const headerValue = req.header(headerName);
+
   // careful to not allow when they both match but are unset
   if (headerValue?.length > 1 && cookieValue === headerValue) {
     next();

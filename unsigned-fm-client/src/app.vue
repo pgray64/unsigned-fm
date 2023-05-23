@@ -1,12 +1,17 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
 import TopNavBar from "@/components/top-nav-bar.vue";
+import {useApiClient} from "@/composables/api-client/use-api-client";
+import {ref} from "vue";
 
+const loading = ref(true);
 // Vue3 composition - directly in here is equivalent to created hook
-loadCsrfToken();
+initialize();
 
-async function loadCsrfToken() {
-
+async function initialize() {
+  const apiClient = useApiClient();
+  await apiClient.loadCsrfToken();
+  loading.value = false;
 }
 
 </script>
@@ -17,7 +22,10 @@ async function loadCsrfToken() {
     </header>
     <main>
       <div class="container-fluid mt-3">
-        <router-view />
+        <div v-if="loading" class="pt-5 d-flex justify-content-center">
+          <div class="spinner-grow text-primary"></div>
+        </div>
+        <router-view v-else/>
       </div>
     </main>
 </template>
