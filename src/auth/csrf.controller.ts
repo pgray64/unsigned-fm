@@ -4,7 +4,7 @@ import * as Crypto from 'crypto';
 
 const cookieName = 'csrf_token';
 
-@Controller('csrf')
+@Controller('internal/csrf')
 export class CsrfController {
   @Get()
   GetCsrfToken(@Res({ passthrough: true }) response: Response) {

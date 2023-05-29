@@ -21,7 +21,7 @@ async function initialize() {
       <top-nav-bar/>
     </header>
     <main>
-      <div class="container-fluid mt-3">
+      <div class="container mt-3">
         <div v-if="loading" class="pt-5 d-flex justify-content-center">
           <div class="spinner-grow text-primary"></div>
         </div>
