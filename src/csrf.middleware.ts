@@ -1,8 +1,6 @@
 import { UnauthorizedException } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-
-const cookieName = 'csrf_token';
-const headerName = 'X-CSRF-TOKEN';
+import authConstants from './auth/auth.constants';
 
 const pathsToSkipCsrfCheck = ['/internal/auth/google/redirect'] as string[];
 
@@ -16,8 +14,8 @@ export function CsrfMiddleware(
     return;
   }
   // Check csrf token
-  const cookieValue = req.cookies[cookieName];
-  const headerValue = req.header(headerName);
+  const cookieValue = req.cookies[authConstants.csrfCookieName];
+  const headerValue = req.header(authConstants.csrfHeaderName);
 
   // careful to not allow when they both match but are unset
   if (headerValue?.length > 1 && cookieValue === headerValue) {

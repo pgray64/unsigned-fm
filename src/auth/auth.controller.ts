@@ -4,8 +4,8 @@ import { AuthService } from './auth.service';
 import { UserAuthDataDto } from './user-auth-data.dto';
 import { AuthProviderEnum } from '../users/auth-provider.enum';
 import { Response } from 'express';
+import authConstants from './auth.constants';
 
-const cookieName = 'auth_token';
 @Controller('internal/auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -26,7 +26,7 @@ export class AuthController {
       req.user as UserAuthDataDto,
       AuthProviderEnum.Google,
     );
-    response.cookie(cookieName, jwt, { httpOnly: true });
+    response.cookie(authConstants.authCookieName, jwt, { httpOnly: true });
     response.redirect('/');
   }
 }
