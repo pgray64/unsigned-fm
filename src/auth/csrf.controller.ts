@@ -9,6 +9,6 @@ export class CsrfController {
   @Get()
   GetCsrfToken(@Res({ passthrough: true }) response: Response) {
     const token = Crypto.randomBytes(64).toString('hex');
-    response.cookie(cookieName, token);
+    response.cookie(cookieName, token); // can't set httpOnly as client CSRF protection needs to be able to read it
   }
 }

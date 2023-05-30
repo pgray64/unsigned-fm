@@ -1,4 +1,4 @@
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { UserAuthDataDto } from './user-auth-data.dto';
@@ -26,7 +26,7 @@ export class AuthController {
       req.user as UserAuthDataDto,
       AuthProviderEnum.Google,
     );
-    response.cookie(cookieName, jwt);
+    response.cookie(cookieName, jwt, { httpOnly: true });
     response.redirect('/');
   }
 }

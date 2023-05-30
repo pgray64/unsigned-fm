@@ -4,12 +4,14 @@ import { Request, Response, NextFunction } from 'express';
 const cookieName = 'csrf_token';
 const headerName = 'X-CSRF-TOKEN';
 
+const pathsToSkipCsrfCheck = ['/internal/auth/google/redirect'] as string[];
+
 export function CsrfMiddleware(
   req: Request,
   res: Response,
   next: NextFunction,
 ) {
-  if (req.method === 'GET') {
+  if (req.method === 'GET' || pathsToSkipCsrfCheck.indexOf(req.path) >= 0) {
     next();
     return;
   }

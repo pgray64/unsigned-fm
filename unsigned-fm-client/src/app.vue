@@ -2,7 +2,7 @@
 import { RouterView } from 'vue-router'
 import TopNavBar from "@/components/top-nav-bar.vue";
 import {useApiClient} from "@/composables/api-client/use-api-client";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 
 const loading = ref(true);
 // Vue3 composition - directly in here is equivalent to created hook
