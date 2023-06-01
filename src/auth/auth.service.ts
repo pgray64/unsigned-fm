@@ -4,6 +4,7 @@ import { UsersService } from '../users/users.service';
 import { AuthProviderEnum } from '../users/auth-provider.enum';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { JwtPayloadDto } from './jwt-payload.dto';
 
 @Injectable()
 export class AuthService {
@@ -18,7 +19,10 @@ export class AuthService {
     if (user.deletedAt) {
       throw new NotFoundException();
     }
-    const payload = { username: user.username, sub: user.id };
+    const payload = {
+      username: user.username,
+      userId: user.id,
+    } as JwtPayloadDto;
     return {
       access_token: this.jwtService.sign(payload, {
         secret: this.configService.get<string>('JWT_SECRET'),
