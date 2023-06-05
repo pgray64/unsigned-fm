@@ -5,6 +5,7 @@ import { UserAuthDataDto } from './user-auth-data.dto';
 import { AuthProviderEnum } from '../users/auth-provider.enum';
 import { Response } from 'express';
 import authConstants from './auth.constants';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('internal/auth')
 export class AuthController {
@@ -28,5 +29,10 @@ export class AuthController {
     );
     response.cookie(authConstants.authCookieName, jwt, { httpOnly: true });
     response.redirect('/');
+  }
+
+  @Post('log-out')
+  async logOut(@Res({ passthrough: true }) response: Response) {
+    response.clearCookie(authConstants.authCookieName);
   }
 }

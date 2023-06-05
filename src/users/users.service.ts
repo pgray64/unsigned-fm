@@ -30,7 +30,7 @@ export class UsersService {
     });
     if (storedCreds) {
       const updatedUser = await this.usersRepository.save({
-        id: storedCreds.user.id,
+        id: storedCreds.userId,
         username: newUser.email,
         firstName: newUser.firstName,
         lastName: newUser.lastName,
@@ -43,7 +43,7 @@ export class UsersService {
         lastName: newUser.lastName,
       });
       await this.federatedCredentialsRepository.insert({
-        user: user,
+        userId: user.id,
         subject: newUser.email,
         provider: provider,
       });

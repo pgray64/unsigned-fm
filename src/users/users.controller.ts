@@ -1,11 +1,16 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Response } from 'express';
 
 @Controller('internal/users')
 @UseGuards(JwtAuthGuard)
 export class UsersController {
-  @Get('test')
-  async test() {
-    return 'hello world!'; // todo delete test route
+  @Post('session')
+  @UseGuards(JwtAuthGuard)
+  async getSession(
+    @Req() request,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    return { isLoggedIn: true, user: request.user };
   }
 }

@@ -23,4 +23,6 @@ export class FederatedCredentials {
   @JoinColumn()
   @Index()
   user: User;
+  @Column()
+  userId: number;
 }

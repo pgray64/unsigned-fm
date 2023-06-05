@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
 import TopNavBar from "@/components/top-nav-bar.vue";
-import {useApiClient} from "@/composables/api-client/use-api-client";
-import {onMounted, ref} from "vue";
+import {ref} from "vue";
+import {useSession} from "@/stores/session";
 
 const loading = ref(true);
 // Vue3 composition - directly in here is equivalent to created hook
 initialize();
 
 async function initialize() {
-  const apiClient = useApiClient();
-  await apiClient.loadCsrfToken();
+  const session = useSession();
+  await session.loadCsrfToken();
+  await session.loadSession();
   loading.value = false;
 }
 
