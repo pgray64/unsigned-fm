@@ -7,7 +7,7 @@ import router from './router'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap-icons/font/bootstrap-icons.min.css'
 import 'bootstrap'
-import 'vue3-toastify/dist/index.css';
+import 'vue3-toastify/dist/index.css'
 
 const app = createApp(App)
 

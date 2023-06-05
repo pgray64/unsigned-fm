@@ -3,9 +3,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { UserAuthDataDto } from './user-auth-data.dto';
 import { AuthProviderEnum } from '../users/auth-provider.enum';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import authConstants from './auth.constants';
-import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('internal/auth')
 export class AuthController {
@@ -13,13 +12,13 @@ export class AuthController {
 
   @Get('google')
   @UseGuards(AuthGuard('google'))
-  async googleAuth(@Req() req) {
+  async googleAuth(@Req() req: Request) {
     /* Client visiting this URL redirects them to google sign-in page */
   }
   @Get('google/redirect')
   @UseGuards(AuthGuard('google'))
   async googleAuthRedirect(
-    @Req() req,
+    @Req() req: Request,
     @Res({ passthrough: true }) response: Response,
   ) {
     /* Google sign-in successful, need to provide session token and redirect */

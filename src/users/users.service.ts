@@ -17,6 +17,9 @@ export class UsersService {
   async findOneBy(filter: User): Promise<User | null> {
     return this.usersRepository.findOneBy(filter);
   }
+  async findOneById(id: number) {
+    return this.usersRepository.findOneBy({ id });
+  }
   async remove(id: number): Promise<void> {
     await this.usersRepository.softDelete(id);
   }

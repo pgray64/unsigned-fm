@@ -15,8 +15,12 @@ export function useApiClient() {
             headers
         })
     }
-    function handleGenericError(e: any) {
-        if (e?.response?.status === 401) {
+    function handleGenericError(e: any, errMessage?: string) {
+        console.error(e);
+        if (errMessage) {
+            toast.error(errMessage);
+        }
+        else if (e?.response?.status === 401) {
             toast.error('You need to be logged in to do that');
         } else if (e?.response?.status === 403) {
             toast.error('You\'re not allowed to do that');

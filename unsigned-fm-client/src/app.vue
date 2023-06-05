@@ -2,16 +2,12 @@
 import { RouterView } from 'vue-router'
 import TopNavBar from "@/components/top-nav-bar.vue";
 import {ref} from "vue";
-import {useSession} from "@/stores/session";
 
 const loading = ref(true);
 // Vue3 composition - directly in here is equivalent to created hook
 initialize();
 
 async function initialize() {
-  const session = useSession();
-  await session.loadCsrfToken();
-  await session.loadSession();
   loading.value = false;
 }
 
@@ -23,10 +19,7 @@ async function initialize() {
     </header>
     <main>
       <div class="container mt-5">
-        <div v-if="loading" class="pt-5 d-flex justify-content-center">
-          <div class="spinner-grow text-primary"></div>
-        </div>
-        <router-view v-else/>
+        <router-view/>
       </div>
     </main>
 </template>

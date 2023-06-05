@@ -12,6 +12,9 @@ export const useSession = defineStore('session', () => {
     const user = ref(null);
 
     async function loadCsrfToken() {
+        if (csrfToken.value) {
+            return;
+        }
         let response = null as any;
         try {
             response = await axios.get('/internal/csrf');
