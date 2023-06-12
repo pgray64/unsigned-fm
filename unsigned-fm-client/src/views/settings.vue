@@ -8,6 +8,7 @@ const userInfo = ref(null as any)
 const isLoading = ref(true)
 onMounted(async () => {
   await loadUserInfo()
+  await apiClient.get('/internal/admin/test')
 })
 
 async function loadUserInfo() {

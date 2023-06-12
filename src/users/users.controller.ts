@@ -3,6 +3,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Request, Response } from 'express';
 import { UsersService } from './users.service';
 import { JwtPayloadDto } from '../auth/jwt-payload.dto';
+import { UserAuthDataDto } from '../auth/user-auth-data.dto';
 
 @Controller('internal/users')
 @UseGuards(JwtAuthGuard)
@@ -14,7 +15,7 @@ export class UsersController {
     @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
   ) {
-    return { isLoggedIn: true, user: request.user };
+    return { isLoggedIn: true, user: request.user as JwtPayloadDto };
   }
   @Get('profile')
   async getProfile(@Req() request: Request) {

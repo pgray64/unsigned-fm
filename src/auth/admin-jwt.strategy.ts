@@ -1,13 +1,13 @@
-import { ExtractJwt, Strategy } from 'passport-jwt';
+import { Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtPayloadDto } from './jwt-payload.dto';
 import { ConfigService } from '@nestjs/config';
 import authConstants from './auth.constants';
 import { AdminService } from '../admin/admin.service';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class AdminJwtStrategy extends PassportStrategy(Strategy, 'admin-jwt') {
   constructor(
     private configService: ConfigService,
     private adminService: AdminService,
@@ -20,17 +20,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayloadDto) {
-    let isAdmin = payload.isAdmin;
-    if (isAdmin) {
-      // So that admin privilege removal takes effect immediately.
-      // Doesn't matter too much since admin routes are protected via admin-jwt-strategy
-      // and that always checks the DB
-      isAdmin = await this.adminService.isUserAnAdmin(payload.userId);
+    const isAdmin = await this.adminService.isUserAnAdmin(payload.userId);
+    if (!isAdmin) {
+      throw new UnauthorizedException();
     }
     return {
       userId: payload.userId,
       username: payload.username,
-      isAdmin,
     } as JwtPayloadDto;
   }
 }

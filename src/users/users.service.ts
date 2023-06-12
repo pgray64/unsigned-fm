@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { FederatedCredentials } from './federated-credentials.entity';
 import { AuthProviderEnum } from './auth-provider.enum';
 import { UserAuthDataDto } from '../auth/user-auth-data.dto';
+import { Admin } from '../admin/admin.entity';
 
 @Injectable()
 export class UsersService {
@@ -17,7 +18,7 @@ export class UsersService {
   async findOneBy(filter: User): Promise<User | null> {
     return this.usersRepository.findOneBy(filter);
   }
-  async findOneById(id: number) {
+  async findOneById(id: number): Promise<User> {
     return this.usersRepository.findOneBy({ id });
   }
   async remove(id: number): Promise<void> {

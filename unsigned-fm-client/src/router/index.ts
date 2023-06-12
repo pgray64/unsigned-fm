@@ -46,7 +46,7 @@ router.beforeEach(async (to) => {
 
   if (!publicPages.includes(to.path)) {
     if (!session.isLoggedIn) {
-      return '/'
+      return '/login'
     }
   }
 })

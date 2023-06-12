@@ -8,6 +8,8 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { User } from './users/user.entity';
 import { FederatedCredentials } from './users/federated-credentials.entity';
+import { Admin } from './admin/admin.entity';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -21,7 +23,7 @@ import { FederatedCredentials } from './users/federated-credentials.entity';
       username: process.env.UFM_PG_USER, // These are only loaded from OS env variables, not env files
       password: process.env.UFM_PG_PASS,
       database: process.env.UFM_PG_DB,
-      entities: [User, FederatedCredentials],
+      entities: [User, FederatedCredentials, Admin],
       synchronize: process.env.UFM_SYNC_DB === '1',
     }),
     ConfigModule.forRoot({
@@ -31,6 +33,7 @@ import { FederatedCredentials } from './users/federated-credentials.entity';
     }),
     AuthModule,
     UsersModule,
+    AdminModule,
   ],
   controllers: [],
   providers: [AppService],

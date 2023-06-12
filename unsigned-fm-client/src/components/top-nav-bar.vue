@@ -22,8 +22,8 @@ const logOut = async function () {
       <router-link class="navbar-brand" to="/"
         ><img
           src="../assets/logo.svg"
-          height="40"
-          width="204"
+          height="50"
+          width="212"
           alt="unsigned.fm"
           title="unsigned.fm"
       /></router-link>
