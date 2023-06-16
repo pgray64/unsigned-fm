@@ -20,8 +20,11 @@ export class AdminController {
       return response.redirect('/admin/spotify-auth/error');
     }
     const token =
-      await this.spotifyService.updateSpotifyUserAccessTokenFromCode(code);
-    if (token?.accessToken) {
+      await this.spotifyService.updateSpotifyUserAccessTokenFromCode(
+        code,
+        false,
+      );
+    if (token) {
       return response.redirect('/admin/spotify-auth/success');
     }
     return response.redirect('/admin/spotify-auth/error');

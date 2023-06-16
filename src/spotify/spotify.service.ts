@@ -55,56 +55,81 @@ export class SpotifyService {
   }
   async updateSpotifyUserAccessTokenFromCode(
     code: string,
-  ): Promise<SpotifyAccessToken | null> {
+    isRefreshToken: boolean,
+  ): Promise<string | null> {
+    let payload = null as any;
+    if (isRefreshToken) {
+      payload = { grant_type: 'refresh_token', refresh_token: code };
+    } else {
+      payload = {
+        grant_type: 'authorization_code',
+        code,
+        redirect_uri: this.spotifyAuthCallbackUrl, // Note that spotify verifies this matches the one passed in on auth code creation
+      };
+    }
     const response = await firstValueFrom(
-      this.httpService.post(
-        this.spotifyGetAccessTokenUrl,
-        {
-          grant_type: 'authorization_code',
-          code,
-          redirect_uri: this.spotifyAuthCallbackUrl, // Note that spotify verifies this matches the one passed in on auth code creation
+      this.httpService.post(this.spotifyGetAccessTokenUrl, payload, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization:
+            'Basic ' +
+            (
+              Buffer.from(
+                this.spotifyClientId + ':' + this.spotifyClientSecret,
+              ) as any
+            ).toString('base64'),
         },
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            Authorization:
-              'Basic ' +
-              (
-                Buffer.from(
-                  this.spotifyClientId + ':' + this.spotifyClientSecret,
-                ) as any
-              ).toString('base64'),
-          },
-          /*auth: {
-            username: this.spotifyClientId,
-            password: this.spotifyClientSecret,
-          },*/
-        },
-      ),
+      }),
     ).catch((e: any) => {
       Logger.error(e, 'Failed to retrieve Spotify access token from auth code');
       throw e;
     });
     const responseData = response.data as SpotifyAccessTokenResponseDto;
-    if (
-      responseData &&
-      responseData.access_token &&
-      responseData.expires_in &&
-      responseData.refresh_token
-    ) {
+
+    if (responseData && responseData.access_token && responseData.expires_in) {
       const now = new Date();
       const expiresAt = addSeconds(now, responseData.expires_in);
-      const newToken = {
-        accessToken: responseData.access_token,
-        spotifyAuthType: SpotifyAuthType.AuthorizationCode,
-        expiresAt,
-        refreshToken: responseData.refresh_token,
-      };
-      await this.accessTokensRepository.upsert(newToken, {
-        conflictPaths: { spotifyAuthType: true },
-        upsertType: 'on-conflict-do-update',
-      });
-      return newToken;
+
+      if (isRefreshToken) {
+        // Note that Spotify has us re-use the same refresh token
+        // and doesn't return a new one, which is a bad practice
+        // Added defensive code in case they change to single-use ones.
+
+        const updatedProperties = {
+          accessToken: responseData.access_token,
+          expiresAt,
+        } as any;
+        if (responseData.refresh_token) {
+          updatedProperties.refreshToken = responseData.refresh_token;
+        }
+        await this.accessTokensRepository.update(
+          {
+            spotifyAuthType: SpotifyAuthType.AuthorizationCode,
+          },
+          updatedProperties,
+        );
+      } else {
+        // We want to be able to force refresh as an admin,
+        // which is why we do an upsert for all cols
+        const newToken = {
+          accessToken: responseData.access_token,
+          spotifyAuthType: SpotifyAuthType.AuthorizationCode,
+          expiresAt,
+          refreshToken: responseData.refresh_token,
+        } as SpotifyAccessToken;
+        await this.accessTokensRepository
+          .createQueryBuilder()
+          .insert()
+          .into(SpotifyAccessToken)
+          .values(newToken)
+          .orUpdate({
+            overwrite: ['refreshToken', 'accessToken', 'expiresAt'],
+            conflict_target: ['spotifyAuthType'],
+          })
+          .setParameter('accessToken', responseData.access_token)
+          .execute();
+      }
+      return responseData.access_token;
     } else {
       Logger.error('Failed to refresh Spotify user access token');
       return null;
@@ -112,7 +137,7 @@ export class SpotifyService {
   }
   async getOrRefreshSpotifyUserAccessToken(
     retryOnFailure?: boolean,
-  ): Promise<SpotifyAccessToken | null> {
+  ): Promise<string | null> {
     const token = await this.accessTokensRepository.findOne({
       where: {
         spotifyAuthType: SpotifyAuthType.AuthorizationCode,
@@ -126,13 +151,15 @@ export class SpotifyService {
       addSeconds(new Date(), this.accessTokenExpirationOffsetSeconds) >
       token.expiresAt
     ) {
-      let newToken: SpotifyAccessToken;
+      let newToken: string;
       let refreshFailed = false;
       try {
         newToken = await this.updateSpotifyUserAccessTokenFromCode(
           token.refreshToken,
+          true,
         );
-      } catch {
+      } catch (e: any) {
+        Logger.error(JSON.stringify(e), 'Failed to refresh access token');
         refreshFailed = true;
       }
       if (!newToken) {
@@ -148,25 +175,31 @@ export class SpotifyService {
       }
       return newToken;
     }
-    return token;
+    return token.accessToken;
   }
   async performApiRequest(
     route: string,
     method: 'POST' | 'GET',
     data?: any,
+    retryOnFailure?: boolean,
   ): Promise<AxiosResponse<any, any>> {
     const token = await this.getOrRefreshSpotifyUserAccessToken(true);
+
     return await firstValueFrom(
       this.httpService.request({
         url: this.spotifyApiBaseUrl + '/' + route,
         method,
         data,
-        headers: { Authorization: 'Bearer ' + token.accessToken },
+        headers: { Authorization: 'Bearer ' + token },
       }),
-    ).catch((e: any) => {
-      console.log(e);
+    ).catch(async (e: any) => {
       Logger.error(e, 'Spotify API request failed: /' + route);
-      throw e;
+      if (retryOnFailure) {
+        Logger.error('Retrying Spotify API request: /' + route);
+        return await this.performApiRequest(route, method, data, false);
+      } else {
+        throw e;
+      }
     });
   }
 }

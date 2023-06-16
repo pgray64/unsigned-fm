@@ -9,5 +9,5 @@ export class SpotifyAccessToken {
   @Column()
   accessToken: string;
   @Column()
-  refreshToken?: string;
+  refreshToken: string;
 }
