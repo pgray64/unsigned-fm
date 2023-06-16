@@ -4,7 +4,9 @@ import * as cookieParser from 'cookie-parser';
 import { CsrfMiddleware } from './csrf.middleware';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: ['error', 'warn'],
+  });
   app.use(cookieParser());
   app.use(CsrfMiddleware);
   await app.listen(3000);

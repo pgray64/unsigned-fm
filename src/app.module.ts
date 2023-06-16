@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppService } from './app.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -10,6 +9,8 @@ import { User } from './users/user.entity';
 import { FederatedCredentials } from './users/federated-credentials.entity';
 import { Admin } from './admin/admin.entity';
 import { AdminModule } from './admin/admin.module';
+import { SpotifyModule } from './spotify/spotify.module';
+import { SpotifyAccessToken } from './spotify/spotify-access-token.entity';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { AdminModule } from './admin/admin.module';
       username: process.env.UFM_PG_USER, // These are only loaded from OS env variables, not env files
       password: process.env.UFM_PG_PASS,
       database: process.env.UFM_PG_DB,
-      entities: [User, FederatedCredentials, Admin],
+      entities: [User, FederatedCredentials, Admin, SpotifyAccessToken],
       synchronize: process.env.UFM_SYNC_DB === '1',
     }),
     ConfigModule.forRoot({
@@ -34,8 +35,9 @@ import { AdminModule } from './admin/admin.module';
     AuthModule,
     UsersModule,
     AdminModule,
+    SpotifyModule,
   ],
   controllers: [],
-  providers: [AppService],
+  providers: [],
 })
 export class AppModule {}

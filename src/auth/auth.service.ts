@@ -9,12 +9,15 @@ import { AdminService } from '../admin/admin.service';
 
 @Injectable()
 export class AuthService {
+  private jwtSecret: string;
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
     private configService: ConfigService,
     private adminService: AdminService,
-  ) {}
+  ) {
+    this.jwtSecret = this.configService.getOrThrow<string>('JWT_SECRET');
+  }
 
   async logInUser(authData: UserAuthDataDto, provider: AuthProviderEnum) {
     const user = await this.usersService.createOrUpdateUser(authData, provider);
@@ -31,7 +34,7 @@ export class AuthService {
     } as JwtPayloadDto;
     return {
       access_token: this.jwtService.sign(payload, {
-        secret: this.configService.get<string>('JWT_SECRET'),
+        secret: this.jwtSecret,
         expiresIn: '14d',
       }),
     };
