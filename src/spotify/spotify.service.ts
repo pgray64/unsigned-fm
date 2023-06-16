@@ -135,9 +135,12 @@ export class SpotifyService {
       } catch {
         refreshFailed = true;
       }
+      if (!newToken) {
+        refreshFailed = true;
+      }
       if (refreshFailed && retryOnFailure) {
-        return await this.getOrRefreshSpotifyUserAccessToken(false);
         Logger.error('Failed to refresh access token, retrying once');
+        return await this.getOrRefreshSpotifyUserAccessToken(false);
       }
       if (refreshFailed) {
         Logger.error('Failed to refresh access token, not retrying');
