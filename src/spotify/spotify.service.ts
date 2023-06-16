@@ -139,9 +139,7 @@ export class SpotifyService {
     retryOnFailure?: boolean,
   ): Promise<string | null> {
     const token = await this.accessTokensRepository.findOne({
-      where: {
-        spotifyAuthType: SpotifyAuthType.AuthorizationCode,
-      },
+      where: { spotifyAuthType: SpotifyAuthType.AuthorizationCode },
     });
     if (!token) {
       Logger.error('No access token exists for the AuthorizationCode strategy');
@@ -159,7 +157,7 @@ export class SpotifyService {
           true,
         );
       } catch (e: any) {
-        Logger.error(JSON.stringify(e), 'Failed to refresh access token');
+        Logger.error(e, 'Failed to refresh access token');
         refreshFailed = true;
       }
       if (!newToken) {
