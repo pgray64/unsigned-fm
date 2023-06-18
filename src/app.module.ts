@@ -11,6 +11,10 @@ import { Admin } from './admin/admin.entity';
 import { AdminModule } from './admin/admin.module';
 import { SpotifyModule } from './spotify/spotify.module';
 import { SpotifyAccessToken } from './spotify/spotify-access-token.entity';
+import { SongsModule } from './songs/songs.module';
+import { ArtistsModule } from './artists/artists.module';
+import { Song } from './songs/song.entity';
+import { Artist } from './artists/artist.entity';
 
 @Module({
   imports: [
@@ -24,7 +28,14 @@ import { SpotifyAccessToken } from './spotify/spotify-access-token.entity';
       username: process.env.UFM_PG_USER, // These are only loaded from OS env variables, not env files
       password: process.env.UFM_PG_PASS,
       database: process.env.UFM_PG_DB,
-      entities: [User, FederatedCredentials, Admin, SpotifyAccessToken],
+      entities: [
+        User,
+        FederatedCredentials,
+        Admin,
+        SpotifyAccessToken,
+        Song,
+        Artist,
+      ],
       synchronize: process.env.UFM_SYNC_DB === '1',
     }),
     ConfigModule.forRoot({
@@ -36,6 +47,8 @@ import { SpotifyAccessToken } from './spotify/spotify-access-token.entity';
     UsersModule,
     AdminModule,
     SpotifyModule,
+    SongsModule,
+    ArtistsModule,
   ],
   controllers: [],
   providers: [],
