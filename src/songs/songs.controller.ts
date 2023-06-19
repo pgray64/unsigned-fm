@@ -1,4 +1,4 @@
 import { Controller } from '@nestjs/common';
 
-@Controller('songs')
+@Controller('internal/songs')
 export class SongsController {}

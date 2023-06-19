@@ -6,6 +6,7 @@ import PlaylistsView from '../views/playlists.vue';
 import SubmitView from '../views/submit.vue';
 import AdminHome from '../views/admin/admin-home.vue';
 import SpotifyAuthStatus from '../views/admin/spotify-auth-status.vue';
+import ManagePlaylists from '../views/admin/manage-playlists.vue';
 
 import { useSession } from '@/stores/session';
 
@@ -54,6 +55,12 @@ const router = createRouter({
       path: '/admin/spotify-auth/error',
       name: 'spotifyAuthError',
       component: SpotifyAuthStatus,
+      props: { isSuccess: false },
+    },
+    {
+      path: '/admin/playlists/manage',
+      name: 'managePlaylists',
+      component: ManagePlaylists,
       props: { isSuccess: false },
     },
   ],

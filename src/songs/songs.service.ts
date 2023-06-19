@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Song } from './song.entity';
 import { SpotifyApiService } from '../spotify/spotify-api.service';
 import { ArtistsService } from '../artists/artists.service';
+import { SpotifyTrackDto } from '../spotify/spotify-track.dto';
 
 @Injectable()
 export class SongsService {
@@ -13,34 +14,28 @@ export class SongsService {
     private spotifyApiService: SpotifyApiService,
     private artistsService: ArtistsService,
   ) {}
-  async getOrSaveSong(spotifyTrackId: string): Promise<Song> {
-    const song = await this.songRepository.findOne({
-      where: { spotifyTrackId },
-      relations: { artists: true },
-    });
-    if (song) {
-      return song;
-    }
-    const track = await this.spotifyApiService.getTrack(spotifyTrackId);
-    if (!track) {
-      return null;
-    }
+  async saveSong(track: SpotifyTrackDto): Promise<Song> {
+    const spotifyTrackId = track.spotifyTrackId;
     const artists = track.artists;
     // This is poorly optimized, but the vast majority of songs have a single artist,
     // so it does not really matter
     for (const artist of artists) {
-      await this.artistsService.createIfNotExists(
-        artist.spotifyArtistId,
-        artist,
-      );
+      await this.artistsService.createOrUpdate(artist);
     }
 
-    await this.songRepository.insert({
-      spotifyTrackId: track.spotifyTrackId,
-      spotifyAlbumId: track.spotifyAlbumId,
-      name: track.name,
-      artists,
-    });
+    // Artists cannot change song data in Spotify, so don't bother updating
+    return (
+      (await this.songRepository.findOne({
+        where: { spotifyTrackId },
+        relations: { artists: true },
+      })) ??
+      (await this.songRepository.save({
+        spotifyTrackId: track.spotifyTrackId,
+        spotifyAlbumId: track.spotifyAlbumId,
+        name: track.name,
+        artists,
+      }))
+    );
     // todo: re-encode and save track image
   }
 }

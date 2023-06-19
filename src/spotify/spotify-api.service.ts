@@ -7,6 +7,8 @@ import { SpotifyUserDto } from './spotify-user.dto';
 export class SpotifyApiService {
   constructor(private spotifyService: SpotifyService) {}
 
+  readonly spotifyWebPlaylistUrl = 'https://open.spotify.com/playlist';
+
   async getUserProfile(): Promise<SpotifyUserDto> {
     const response = await this.spotifyService.performApiRequest('me', 'GET');
     return {

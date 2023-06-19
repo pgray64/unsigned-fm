@@ -10,21 +10,20 @@ export class ArtistsService {
     @InjectRepository(Artist)
     private artistRepository: Repository<Artist>,
   ) {}
-  async createIfNotExists(
-    spotifyArtistId: string,
-    artist: SpotifyArtistDto,
-  ): Promise<Artist> {
-    const currentArtist = await this.artistRepository.findOneBy({
-      spotifyArtistId,
-    });
-    if (currentArtist) {
-      return currentArtist;
-    } else {
-      // todo re-encode and save artist image
-      return await this.artistRepository.save({
-        spotifyArtistId: spotifyArtistId,
-        name: artist.name,
-      });
-    }
+  async createOrUpdate(artist: SpotifyArtistDto): Promise<Artist> {
+    const spotifyArtistId = artist.spotifyArtistId;
+    const currentArtist =
+      (await this.artistRepository.findOneBy({
+        spotifyArtistId,
+      })) ??
+      ({
+        spotifyArtistId,
+      } as Artist);
+
+    // Update properties that artists can change
+    currentArtist.name = artist.name;
+    // todo re-encode and save artist image
+
+    return await this.artistRepository.save(currentArtist);
   }
 }

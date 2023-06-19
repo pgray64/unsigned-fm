@@ -15,6 +15,9 @@ import { SongsModule } from './songs/songs.module';
 import { ArtistsModule } from './artists/artists.module';
 import { Song } from './songs/song.entity';
 import { Artist } from './artists/artist.entity';
+import { PlaylistsModule } from './playlists/playlists.module';
+import { Playlist } from './playlists/playlist.entity';
+import { PlaylistSong } from './playlists/playlist-song.entity';
 
 @Module({
   imports: [
@@ -35,6 +38,8 @@ import { Artist } from './artists/artist.entity';
         SpotifyAccessToken,
         Song,
         Artist,
+        Playlist,
+        PlaylistSong,
       ],
       synchronize: process.env.UFM_SYNC_DB === '1',
     }),
@@ -49,6 +54,7 @@ import { Artist } from './artists/artist.entity';
     SpotifyModule,
     SongsModule,
     ArtistsModule,
+    PlaylistsModule,
   ],
   controllers: [],
   providers: [],
