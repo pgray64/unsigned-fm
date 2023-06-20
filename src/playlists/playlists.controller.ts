@@ -10,16 +10,4 @@ export class PlaylistsController {
     private playlistsService: PlaylistsService,
     private spotifyApiService: SpotifyApiService,
   ) {}
-  @Get('all')
-  async getPlaylists(): Promise<PlaylistSearchResultDto[]> {
-    return (await this.playlistsService.getAll()).map((playlist: Playlist) => {
-      return {
-        id: playlist.id,
-        name: playlist.name,
-        isRestricted: playlist.isRestricted,
-        spotifyPlaylistId: playlist.spotifyPlaylistId,
-        spotifyPlaylistUrl: `${this.spotifyApiService.spotifyWebPlaylistUrl}/${playlist.spotifyPlaylistId}`,
-      };
-    });
-  }
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { SpotifyService } from './spotify.service';
 import { SpotifyTrackDto } from './spotify-track.dto';
 import { SpotifyUserDto } from './spotify-user.dto';
+import { SpotifyPlaylistDto } from './spotify-playlist.dto';
 
 @Injectable()
 export class SpotifyApiService {
@@ -47,6 +48,20 @@ export class SpotifyApiService {
             artist.images?.length > 0 ? artist.images[0].url : undefined,
         };
       }),
+    };
+  }
+  async getPlaylist(spotifyPlaylistId: string): Promise<SpotifyPlaylistDto> {
+    const response = await this.spotifyService.performApiRequest(
+      'playlists/' + spotifyPlaylistId,
+      'GET',
+    );
+    return {
+      spotifyPlaylistId: response.data.id,
+      name: response.data.name,
+      playlistImage:
+        response.data.images?.length > 0
+          ? response.data.image[0].url
+          : undefined,
     };
   }
 }

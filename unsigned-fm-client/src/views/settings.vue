@@ -1,25 +1,25 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { useApiClient } from '@/composables/api-client/use-api-client'
-import LoadingSpinner from '@/components/loading-spinner.vue'
+import { onMounted, ref } from 'vue';
+import { useApiClient } from '@/composables/api-client/use-api-client';
+import LoadingSpinner from '@/components/loading-spinner.vue';
 
-const apiClient = useApiClient()
-const userInfo = ref(null as any)
-const isLoading = ref(true)
+const apiClient = useApiClient();
+const userInfo = ref(null as any);
+const isLoading = ref(true);
 onMounted(async () => {
-  await loadUserInfo()
-  await apiClient.get('/internal/admin/test')
-})
+  await loadUserInfo();
+  await apiClient.get('/internal/admin/test');
+});
 
 async function loadUserInfo() {
-  let userResponse = null as any
+  let userResponse = null as any;
   try {
-    userResponse = await apiClient.get('/internal/users/profile')
+    userResponse = await apiClient.get('/internal/users/profile');
   } catch (e) {
-    apiClient.handleGenericError(e, 'Failed to load user data')
+    apiClient.displayGenericError(e, 'Failed to load user data');
   }
-  userInfo.value = userResponse.data
-  isLoading.value = false
+  userInfo.value = userResponse.data;
+  isLoading.value = false;
 }
 </script>
 

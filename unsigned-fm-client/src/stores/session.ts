@@ -19,7 +19,7 @@ export const useSession = defineStore('session', () => {
     try {
       response = await axios.get('/internal/csrf');
     } catch (e: any) {
-      apiClient.handleGenericError(e);
+      apiClient.displayGenericError(e);
     }
     csrfToken.value = response.data.csrfToken ?? '';
   }

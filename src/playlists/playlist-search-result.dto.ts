@@ -4,4 +4,5 @@ export interface PlaylistSearchResultDto {
   isRestricted: boolean;
   spotifyPlaylistId: string;
   spotifyPlaylistUrl: string;
+  deletedAt: Date;
 }

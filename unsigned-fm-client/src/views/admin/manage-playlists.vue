@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import LoadingSpinner from '@/components/loading-spinner.vue';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useApiClient } from '@/composables/api-client/use-api-client';
-import { required, email } from '@vuelidate/validators';
 
 const apiClient = useApiClient();
 const isLoading = ref(true);
@@ -11,9 +10,9 @@ const newPlaylist = ref({
   spotifyPlaylistId: '',
   isRestricted: false,
 });
-const newPlaylistValidation = {
-  spotifyPlaylistId: { required },
-};
+const newPlaylistValid = computed(() => {
+  return newPlaylist.value.spotifyPlaylistId;
+});
 onMounted(async () => {
   await loadPlaylists();
 });
@@ -22,9 +21,9 @@ async function loadPlaylists() {
   isLoading.value = true;
   let result = null as any;
   try {
-    result = await apiClient.get('/internal/playlists/all');
+    result = await apiClient.get('/internal/admin/playlists/all');
   } catch (e) {
-    apiClient.handleGenericError(e, 'Failed to load playlists');
+    apiClient.displayGenericError(e, 'Failed to load playlists');
   }
   playlists.value = result.data;
   isLoading.value = false;
@@ -33,12 +32,42 @@ async function loadPlaylists() {
 async function addPlaylist() {
   isLoading.value = true;
   try {
-    await apiClient.post('/internal/playlists/save', newPlaylist.value);
+    await apiClient.post('/internal/admin/playlists/save', newPlaylist.value);
   } catch (e) {
-    apiClient.handleGenericError(e, 'Failed to load playlists');
+    apiClient.displayGenericError(e, 'Failed to add playlist');
+  } finally {
+    isLoading.value = false;
+  }
+  newPlaylist.value = {
+    spotifyPlaylistId: '',
+    isRestricted: false,
+  };
+  await loadPlaylists();
+}
+
+async function updatePlaylist(playlist: any, isRestore: boolean) {
+  isLoading.value = true;
+  if (isRestore) {
+    playlist.deletedAt = null;
+  }
+  try {
+    await apiClient.post('/internal/admin/playlists/save', playlist);
+  } catch (e) {
+    apiClient.displayGenericError(e, 'Failed to update playlist');
+  } finally {
+    isLoading.value = false;
+  }
+}
+async function removePlaylist(playlistId: number) {
+  isLoading.value = true;
+  try {
+    await apiClient.post('/internal/admin/playlists/remove', { playlistId });
+  } catch (e) {
+    apiClient.displayGenericError(e, 'Failed to remove playlist');
+  } finally {
+    isLoading.value = false;
   }
   await loadPlaylists();
-  isLoading.value = false;
 }
 </script>
 
@@ -56,27 +85,36 @@ async function addPlaylist() {
             <div class="card mb-3">
               <div class="card-header">Add Playlist</div>
               <div class="card-body">
-                <div>
+                <div class="mb-2">
                   <label for="new-playlist-spotify-id" class="form-label"
                     >Spotify Playlist ID</label
                   >
-                  <input class="form-control" id="new-playlist-spotify-id" />
+                  <input
+                    class="form-control"
+                    id="new-playlist-spotify-id"
+                    v-model="newPlaylist.spotifyPlaylistId"
+                  />
                 </div>
                 <div>
-                  <label for="new-playlist-is-restricted" class="form-label"
-                    >Is Restricted</label
-                  >
                   <div class="form-check form-switch">
                     <input
+                      v-model="newPlaylist.isRestricted"
                       class="form-check-input"
                       type="checkbox"
                       role="switch"
                       id="new-playlist-is-restricted"
                     />
+                    <label for="new-playlist-is-restricted" class="form-label"
+                      >Is Restricted</label
+                    >
                   </div>
                 </div>
                 <div>
-                  <button class="btn btn-primary" @click="addPlaylist()">
+                  <button
+                    class="btn btn-primary"
+                    @click="addPlaylist()"
+                    :disabled="!newPlaylistValid"
+                  >
                     Add Playlist
                   </button>
                 </div>
@@ -87,40 +125,61 @@ async function addPlaylist() {
             <div class="card">
               <div class="card-header">Edit Playlists</div>
               <div class="card-body">
-                <ul class="list-group">
+                <ul class="list-group" v-if="playlists.length > 0">
                   <li
                     class="list-group-item"
                     v-for="playlist of playlists"
                     v-bind:key="playlist.id"
                   >
-                    <input
-                      class="form-control"
-                      placeholder="Name"
-                      v-model="playlist.name"
-                    />
-                    <input
-                      class="form-check-input"
-                      type="checkbox"
-                      role="switch"
-                      id="new-playlist-is-restricted"
-                      v-model="playlist.isRestricted"
-                    />
-                    <label
-                      class="form-check-label"
-                      for="new-playlist-is-restricted"
-                      >Is restricted?</label
+                    <div class="mb-2">
+                      <b> {{ playlist.name }}</b>
+
+                      <span
+                        v-if="playlist.deletedAt"
+                        class="text-danger text-small ms-2"
+                        ><i class="bi bi-eye-slash"></i> Hidden</span
+                      >
+                    </div>
+                    <div class="form-check form-switch">
+                      <input
+                        v-model="playlist.isRestricted"
+                        class="form-check-input"
+                        type="checkbox"
+                        role="switch"
+                        :id="`playlist-${playlist.id}-is-restricted`"
+                      />
+                      <label
+                        for="`playlist-${playlist.id}-is-restricted`"
+                        class="form-label"
+                        >Is Restricted</label
+                      >
+                    </div>
+                    <button
+                      class="btn btn-sm btn-primary d-inline"
+                      @click="updatePlaylist(playlist, false)"
                     >
+                      <i class="bi bi-cloud-upload"></i>
+                      Update
+                    </button>
+                    <button
+                      v-if="playlist.deletedAt"
+                      class="btn btn-sm d-inline ms-2 btn-outline-success"
+                      @click="updatePlaylist(playlist, true)"
+                    >
+                      <i class="bi bi-arrow-counterclockwise"></i>
+                      Restore
+                    </button>
+                    <button
+                      v-else
+                      class="btn btn-sm d-inline ms-2 btn-outline-danger"
+                      @click="removePlaylist(playlist.id)"
+                    >
+                      <i class="bi bi-trash"></i>
+                      Remove
+                    </button>
                   </li>
                 </ul>
-                <div>
-                  <button
-                    class="btn btn-primary btn-sm"
-                    v-if="playlists && playlists?.length >= 1"
-                  >
-                    Save
-                  </button>
-                  <p><em>No playlists</em></p>
-                </div>
+                <p v-else><em>No playlists</em></p>
               </div>
             </div>
           </div>

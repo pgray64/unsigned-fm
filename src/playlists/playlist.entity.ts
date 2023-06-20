@@ -1,6 +1,7 @@
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   Index,
   PrimaryGeneratedColumn,
@@ -17,7 +18,7 @@ export class Playlist {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ nullable: true })
   playlistImage: string;
 
   @Column({ default: 0 })
@@ -29,4 +30,7 @@ export class Playlist {
 
   @Column()
   isRestricted: boolean;
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
 }

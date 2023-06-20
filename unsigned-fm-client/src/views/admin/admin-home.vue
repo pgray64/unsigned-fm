@@ -17,20 +17,21 @@ async function getCurrentUser(): Promise<any> {
   try {
     result = await apiClient.get('/internal/admin/spotify/user-info');
   } catch (e) {
-    apiClient.handleGenericError(
+    apiClient.displayGenericError(
       e,
       'Failed to load API user profile, access token may not be configured',
     );
+  } finally {
+    isLoadingUser.value = false;
   }
   user.value = result.data;
-  isLoadingUser.value = false;
 }
 async function authorizeWithSpotify() {
   let result = null as any;
   try {
     result = await apiClient.get('/internal/admin/spotify/authorization-url');
   } catch (e) {
-    apiClient.handleGenericError(e, 'Failed to get Spotify auth link');
+    apiClient.displayGenericError(e, 'Failed to get Spotify auth link');
   }
   const url = result.data.url;
   window.location.href = url;
