@@ -9,18 +9,18 @@ export class PlaylistsService {
     @InjectRepository(Playlist)
     private playlistRepository: Repository<Playlist>,
   ) {}
-  async listPlaylists(): Promise<Playlist[]> {
+  async getAll(): Promise<Playlist[]> {
     const playlists = await this.playlistRepository.find({
       order: { hotScore: 'desc' },
     });
     return playlists;
   }
 
-  /* This is dangerous and should only be used for admins */
-  async saveAll(playlists: Playlist[]) {
-    await this.playlistRepository.save(playlists);
-  }
   async remove(playlistId: number) {
     await this.playlistRepository.softDelete({ id: playlistId });
+  }
+
+  async save(playlist: Playlist) {
+    await this.playlistRepository.save(playlist);
   }
 }

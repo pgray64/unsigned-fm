@@ -12,16 +12,14 @@ export class PlaylistsController {
   ) {}
   @Get('all')
   async getPlaylists(): Promise<PlaylistSearchResultDto[]> {
-    return (await this.playlistsService.listPlaylists()).map(
-      (playlist: Playlist) => {
-        return {
-          id: playlist.id,
-          name: playlist.name,
-          isRestricted: playlist.isRestricted,
-          spotifyPlaylistId: playlist.spotifyPlaylistId,
-          spotifyPlaylistUrl: `${this.spotifyApiService.spotifyWebPlaylistUrl}/${playlist.spotifyPlaylistId}`,
-        };
-      },
-    );
+    return (await this.playlistsService.getAll()).map((playlist: Playlist) => {
+      return {
+        id: playlist.id,
+        name: playlist.name,
+        isRestricted: playlist.isRestricted,
+        spotifyPlaylistId: playlist.spotifyPlaylistId,
+        spotifyPlaylistUrl: `${this.spotifyApiService.spotifyWebPlaylistUrl}/${playlist.spotifyPlaylistId}`,
+      };
+    });
   }
 }

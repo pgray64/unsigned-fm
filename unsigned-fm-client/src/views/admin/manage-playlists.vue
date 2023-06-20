@@ -2,11 +2,18 @@
 import LoadingSpinner from '@/components/loading-spinner.vue';
 import { onMounted, ref } from 'vue';
 import { useApiClient } from '@/composables/api-client/use-api-client';
+import { required, email } from '@vuelidate/validators';
 
 const apiClient = useApiClient();
 const isLoading = ref(true);
 const playlists = ref(null as any);
-
+const newPlaylist = ref({
+  spotifyPlaylistId: '',
+  isRestricted: false,
+});
+const newPlaylistValidation = {
+  spotifyPlaylistId: { required },
+};
 onMounted(async () => {
   await loadPlaylists();
 });
@@ -20,6 +27,17 @@ async function loadPlaylists() {
     apiClient.handleGenericError(e, 'Failed to load playlists');
   }
   playlists.value = result.data;
+  isLoading.value = false;
+}
+
+async function addPlaylist() {
+  isLoading.value = true;
+  try {
+    await apiClient.post('/internal/playlists/save', newPlaylist.value);
+  } catch (e) {
+    apiClient.handleGenericError(e, 'Failed to load playlists');
+  }
+  await loadPlaylists();
   isLoading.value = false;
 }
 </script>
@@ -58,7 +76,9 @@ async function loadPlaylists() {
                   </div>
                 </div>
                 <div>
-                  <button class="btn btn-primary">Add Playlist</button>
+                  <button class="btn btn-primary" @click="addPlaylist()">
+                    Add Playlist
+                  </button>
                 </div>
               </div>
             </div>

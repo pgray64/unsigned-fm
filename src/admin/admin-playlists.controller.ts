@@ -7,9 +7,9 @@ import { PlaylistsService } from '../playlists/playlists.service';
 @UseGuards(AdminJwtAuthGuard)
 export class AdminPlaylistsController {
   constructor(private playlistsService: PlaylistsService) {}
-  @Post('save-all')
-  async saveAll(@Body('playlists') playlists: Playlist[]) {
-    await this.playlistsService.saveAll(playlists);
+  @Post('save')
+  async save(@Body() playlist: Playlist) {
+    await this.playlistsService.save(playlist);
   }
   @Post('remove')
   async remove(@Body('playlistId') playlistId: number) {
