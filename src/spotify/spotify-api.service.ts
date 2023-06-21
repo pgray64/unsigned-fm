@@ -3,6 +3,7 @@ import { SpotifyService } from './spotify.service';
 import { SpotifyTrackDto } from './spotify-track.dto';
 import { SpotifyUserDto } from './spotify-user.dto';
 import { SpotifyPlaylistDto } from './spotify-playlist.dto';
+import { SpotifyArtistDto } from './spotify-artist.dto';
 
 @Injectable()
 export class SpotifyApiService {
@@ -40,12 +41,13 @@ export class SpotifyApiService {
           ? response.data?.album?.images[0].url
           : undefined,
       spotifyAlbumId: response.data.album?.id,
-      artists: response.data.artists?.map((artist: any) => {
+      artists: response.data.artists?.map((artist: any): SpotifyArtistDto => {
         return {
           spotifyArtistId: artist.id,
           name: artist.name,
           artistImage:
             artist.images?.length > 0 ? artist.images[0].url : undefined,
+          followers: artist.followers?.total ?? 0,
         };
       }),
     };

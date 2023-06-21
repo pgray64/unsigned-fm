@@ -5,7 +5,6 @@ import { Repository } from 'typeorm';
 import { FederatedCredentials } from './federated-credentials.entity';
 import { AuthProviderEnum } from './auth-provider.enum';
 import { UserAuthDataDto } from '../auth/user-auth-data.dto';
-import { Admin } from '../admin/admin.entity';
 
 @Injectable()
 export class UsersService {

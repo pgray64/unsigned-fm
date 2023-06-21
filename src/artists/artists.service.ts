@@ -22,6 +22,7 @@ export class ArtistsService {
 
     // Update properties that artists can change
     currentArtist.name = spotifyArtist.name;
+    currentArtist.followers = spotifyArtist.followers;
     // todo re-encode and save artist image
 
     return await this.artistRepository.save(currentArtist);

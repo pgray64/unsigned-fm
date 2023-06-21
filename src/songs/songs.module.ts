@@ -10,5 +10,6 @@ import { ArtistsModule } from '../artists/artists.module';
   imports: [TypeOrmModule.forFeature([Song]), SpotifyModule, ArtistsModule],
   providers: [SongsService],
   controllers: [SongsController],
+  exports: [SongsService],
 })
 export class SongsModule {}

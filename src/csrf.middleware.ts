@@ -21,6 +21,6 @@ export function CsrfMiddleware(
   if (headerValue?.length > 1 && cookieValue === headerValue) {
     next();
   } else {
-    throw new UnauthorizedException('Invalid CSRF token');
+    throw new UnauthorizedException('csrf_token', 'Invalid CSRF token');
   }
 }

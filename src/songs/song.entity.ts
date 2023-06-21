@@ -4,6 +4,7 @@ import {
   JoinTable,
   ManyToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Artist } from '../artists/artist.entity';
 
@@ -27,4 +28,7 @@ export class Song {
 
   @Column()
   spotifyAlbumId: string;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

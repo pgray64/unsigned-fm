@@ -13,4 +13,7 @@ export class Artist {
 
   @Column()
   artistImage: string;
+
+  @Column()
+  followers: number;
 }
