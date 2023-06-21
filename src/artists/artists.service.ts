@@ -10,8 +10,8 @@ export class ArtistsService {
     @InjectRepository(Artist)
     private artistRepository: Repository<Artist>,
   ) {}
-  async createOrUpdate(artist: SpotifyArtistDto): Promise<Artist> {
-    const spotifyArtistId = artist.spotifyArtistId;
+  async createOrUpdate(spotifyArtist: SpotifyArtistDto): Promise<Artist> {
+    const spotifyArtistId = spotifyArtist.spotifyArtistId;
     const currentArtist =
       (await this.artistRepository.findOneBy({
         spotifyArtistId,
@@ -21,7 +21,7 @@ export class ArtistsService {
       } as Artist);
 
     // Update properties that artists can change
-    currentArtist.name = artist.name;
+    currentArtist.name = spotifyArtist.name;
     // todo re-encode and save artist image
 
     return await this.artistRepository.save(currentArtist);
