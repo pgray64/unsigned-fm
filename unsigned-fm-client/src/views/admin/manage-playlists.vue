@@ -72,114 +72,116 @@ async function removePlaylist(playlistId: number) {
 </script>
 
 <template>
-  <div class="col-12">
-    <h4><router-link to="/admin/home">Admin</router-link></h4>
-    <div class="mt-3">
-      <h5>Playlists</h5>
-      <div v-if="isLoading" class="text-center">
-        <loading-spinner></loading-spinner>
-      </div>
-      <div v-else-if="playlists" class="justify-content-center">
-        <div class="row">
-          <div class="col-12 col-lg-6">
-            <div class="card mb-3">
-              <div class="card-header">Add Playlist</div>
-              <div class="card-body">
-                <div class="mb-2">
-                  <label for="new-playlist-spotify-id" class="form-label"
-                    >Spotify Playlist ID</label
-                  >
-                  <input
-                    class="form-control"
-                    id="new-playlist-spotify-id"
-                    v-model="newPlaylist.spotifyPlaylistId"
-                  />
-                </div>
-                <div>
-                  <div class="form-check form-switch">
-                    <input
-                      v-model="newPlaylist.isRestricted"
-                      class="form-check-input"
-                      type="checkbox"
-                      role="switch"
-                      id="new-playlist-is-restricted"
-                    />
-                    <label for="new-playlist-is-restricted" class="form-label"
-                      >Is Restricted</label
+  <div class="row">
+    <div class="col-12">
+      <h4><router-link to="/admin/home">Admin</router-link></h4>
+      <div class="mt-3">
+        <h5>Playlists</h5>
+        <div v-if="isLoading" class="text-center">
+          <loading-spinner></loading-spinner>
+        </div>
+        <div v-else-if="playlists" class="justify-content-center">
+          <div class="row">
+            <div class="col-12 col-lg-6">
+              <div class="card mb-3">
+                <div class="card-header">Add Playlist</div>
+                <div class="card-body">
+                  <div class="mb-2">
+                    <label for="new-playlist-spotify-id" class="form-label"
+                      >Spotify Playlist ID</label
                     >
+                    <input
+                      class="form-control"
+                      id="new-playlist-spotify-id"
+                      v-model="newPlaylist.spotifyPlaylistId"
+                    />
                   </div>
-                </div>
-                <div>
-                  <button
-                    class="btn btn-primary"
-                    @click="addPlaylist()"
-                    :disabled="!newPlaylistValid"
-                  >
-                    Add Playlist
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-12 col-lg-6">
-            <div class="card">
-              <div class="card-header">Edit Playlists</div>
-              <div class="card-body">
-                <ul class="list-group" v-if="playlists.length > 0">
-                  <li
-                    class="list-group-item"
-                    v-for="playlist of playlists"
-                    v-bind:key="playlist.id"
-                  >
-                    <div class="mb-2">
-                      <b> {{ playlist.name }}</b>
-
-                      <span
-                        v-if="playlist.deletedAt"
-                        class="text-danger text-small ms-2"
-                        ><i class="bi bi-eye-slash"></i> Hidden</span
-                      >
-                    </div>
+                  <div>
                     <div class="form-check form-switch">
                       <input
-                        v-model="playlist.isRestricted"
+                        v-model="newPlaylist.isRestricted"
                         class="form-check-input"
                         type="checkbox"
                         role="switch"
-                        :id="`playlist-${playlist.id}-is-restricted`"
+                        id="new-playlist-is-restricted"
                       />
-                      <label
-                        for="`playlist-${playlist.id}-is-restricted`"
-                        class="form-label"
+                      <label for="new-playlist-is-restricted" class="form-label"
                         >Is Restricted</label
                       >
                     </div>
+                  </div>
+                  <div>
                     <button
-                      class="btn btn-sm btn-primary d-inline"
-                      @click="updatePlaylist(playlist, false)"
+                      class="btn btn-primary"
+                      @click="addPlaylist()"
+                      :disabled="!newPlaylistValid"
                     >
-                      <i class="bi bi-cloud-upload"></i>
-                      Update
+                      Add Playlist
                     </button>
-                    <button
-                      v-if="playlist.deletedAt"
-                      class="btn btn-sm d-inline ms-2 btn-outline-success"
-                      @click="updatePlaylist(playlist, true)"
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-lg-6">
+              <div class="card">
+                <div class="card-header">Edit Playlists</div>
+                <div class="card-body">
+                  <ul class="list-group" v-if="playlists.length > 0">
+                    <li
+                      class="list-group-item"
+                      v-for="playlist of playlists"
+                      v-bind:key="playlist.id"
                     >
-                      <i class="bi bi-arrow-counterclockwise"></i>
-                      Restore
-                    </button>
-                    <button
-                      v-else
-                      class="btn btn-sm d-inline ms-2 btn-outline-danger"
-                      @click="removePlaylist(playlist.id)"
-                    >
-                      <i class="bi bi-trash"></i>
-                      Remove
-                    </button>
-                  </li>
-                </ul>
-                <p v-else><em>No playlists</em></p>
+                      <div class="mb-2">
+                        <b> {{ playlist.name }}</b>
+
+                        <span
+                          v-if="playlist.deletedAt"
+                          class="text-danger text-small ms-2"
+                          ><i class="bi bi-eye-slash"></i> Hidden</span
+                        >
+                      </div>
+                      <div class="form-check form-switch">
+                        <input
+                          v-model="playlist.isRestricted"
+                          class="form-check-input"
+                          type="checkbox"
+                          role="switch"
+                          :id="`playlist-${playlist.id}-is-restricted`"
+                        />
+                        <label
+                          for="`playlist-${playlist.id}-is-restricted`"
+                          class="form-label"
+                          >Is Restricted</label
+                        >
+                      </div>
+                      <button
+                        class="btn btn-sm btn-primary d-inline"
+                        @click="updatePlaylist(playlist, false)"
+                      >
+                        <i class="bi bi-cloud-upload"></i>
+                        Update
+                      </button>
+                      <button
+                        v-if="playlist.deletedAt"
+                        class="btn btn-sm d-inline ms-2 btn-outline-success"
+                        @click="updatePlaylist(playlist, true)"
+                      >
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                        Restore
+                      </button>
+                      <button
+                        v-else
+                        class="btn btn-sm d-inline ms-2 btn-outline-danger"
+                        @click="removePlaylist(playlist.id)"
+                      >
+                        <i class="bi bi-trash"></i>
+                        Remove
+                      </button>
+                    </li>
+                  </ul>
+                  <p v-else><em>No playlists</em></p>
+                </div>
               </div>
             </div>
           </div>
