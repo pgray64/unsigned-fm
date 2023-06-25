@@ -26,12 +26,10 @@ export class AuthController {
       req.user as UserAuthDataDto,
       AuthProviderEnum.Google,
     );
-    response.cookie(authConstants.authCookieName, jwt, { httpOnly: true });
+    // Need http-only for front-end requests
+    response.cookie(authConstants.authCookieName, jwt.access_token, {
+      httpOnly: false,
+    });
     response.redirect('/');
-  }
-
-  @Post('log-out')
-  async logOut(@Res({ passthrough: true }) response: Response) {
-    response.clearCookie(authConstants.authCookieName);
   }
 }

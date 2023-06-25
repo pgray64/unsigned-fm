@@ -1,18 +1,18 @@
-import { useSession } from '@/stores/session';
 import axios, { type AxiosResponse } from 'axios';
 import { toast } from 'vue3-toastify';
+import { useCookies } from 'vue3-cookies';
 
-const csrfTokenHeaderName = 'X-CSRF-TOKEN';
+const authTokenCookieName = 'auth_token';
 export function useApiClient() {
-  const session = useSession();
+  const cookies = useCookies();
   async function get(route: string): Promise<AxiosResponse | any> {
-    return await axios.get(route);
+    return await axios.get(route, {
+      headers: getHeaders(),
+    });
   }
   async function post(route: string, data: any): Promise<AxiosResponse | any> {
-    const headers = {} as any;
-    headers[csrfTokenHeaderName] = session.csrfToken;
     return await axios.post(route, data, {
-      headers,
+      headers: getHeaders(),
     });
   }
   function displayGenericError(e: any, errMessage?: string) {
@@ -27,10 +27,14 @@ export function useApiClient() {
       toast.error('An error occurred');
     }
   }
-
+  function getHeaders() {
+    const authToken = cookies.cookies.get(authTokenCookieName);
+    return { Authorization: `Bearer ${authToken}` };
+  }
   return {
     get,
     post,
     displayGenericError: displayGenericError,
+    authTokenCookieName,
   };
 }

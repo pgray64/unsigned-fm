@@ -1,9 +1,8 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { JwtPayloadDto } from './jwt-payload.dto';
 import { ConfigService } from '@nestjs/config';
-import authConstants from './auth.constants';
 import { AdminService } from '../admin/admin.service';
 
 @Injectable()
@@ -13,7 +12,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     private adminService: AdminService,
   ) {
     super({
-      jwtFromRequest: cookieExtractor,
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: configService.getOrThrow<string>('JWT_SECRET'),
     });
@@ -33,7 +32,4 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       isAdmin,
     } as JwtPayloadDto;
   }
-}
-function cookieExtractor(req: any): string {
-  return req?.cookies[authConstants.authCookieName]?.access_token;
 }

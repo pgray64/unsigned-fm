@@ -1,28 +1,18 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useCookies } from 'vue3-cookies';
 import axios from 'axios';
 import { useApiClient } from '@/composables/api-client/use-api-client';
 
 export const useSession = defineStore('session', () => {
   const apiClient = useApiClient();
-
-  const csrfToken = ref('');
+  const cookies = useCookies();
   const isLoggedIn = ref(false);
   const user = ref(null as any);
+  const isAdmin = computed(() => {
+    return user.value?.isAdmin;
+  });
 
-  async function loadCsrfToken() {
-    if (csrfToken.value) {
-      return;
-    }
-    let response = null as any;
-    try {
-      response = await axios.get('/internal/csrf');
-    } catch (e: any) {
-      apiClient.displayGenericError(e);
-    }
-    csrfToken.value = response.data.csrfToken ?? '';
-  }
   async function loadSession() {
     let sessionData = null as any;
     try {
@@ -37,11 +27,17 @@ export const useSession = defineStore('session', () => {
     isLoggedIn.value = sessionData?.isLoggedIn ?? false;
     user.value = sessionData?.user ?? null;
   }
+  function logOut() {
+    cookies.cookies.remove(apiClient.authTokenCookieName);
+    isLoggedIn.value = false;
+    user.value = null;
+  }
+
   return {
-    csrfToken,
     isLoggedIn,
     user,
-    loadCsrfToken,
     loadSession,
+    logOut,
+    isAdmin,
   };
 });

@@ -1,19 +1,21 @@
 <script setup lang="ts">
-import { useSession } from '@/stores/session'
-import { computed } from 'vue'
-import { useApiClient } from '@/composables/api-client/use-api-client'
-import { useRouter } from 'vue-router'
+import { useSession } from '@/stores/session';
+import { computed } from 'vue';
+import { useApiClient } from '@/composables/api-client/use-api-client';
+import { useRouter } from 'vue-router';
 
-const router = useRouter()
-const session = useSession()
-const apiClient = useApiClient()
+const router = useRouter();
+const session = useSession();
 const isLoggedIn = computed(() => {
-  return session.isLoggedIn
-})
+  return session.isLoggedIn;
+});
 const logOut = async function () {
-  await apiClient.post('/internal/auth/log-out', {})
-  window.location.href = '/'
-}
+  session.logOut();
+  window.location.href = '/';
+};
+const isAdmin = computed(() => {
+  return session.isAdmin;
+});
 </script>
 
 <template>
@@ -40,6 +42,11 @@ const logOut = async function () {
       </button>
       <div class="collapse navbar-collapse" id="navbarCollapse">
         <ul class="navbar-nav ms-auto mb-2 mb-md-0">
+          <li class="nav-item" v-if="isAdmin">
+            <router-link class="nav-link me-lg-2" to="/admin/home"
+              ><i class="bi bi-gear"></i> Admin</router-link
+            >
+          </li>
           <li class="nav-item">
             <router-link class="nav-link me-lg-2" to="/playlists"
               ><i class="bi bi-music-note-list"></i> Playlists</router-link
@@ -62,9 +69,17 @@ const logOut = async function () {
               <i class="bi bi-person-circle me-1"></i> Account
             </a>
             <ul class="dropdown-menu">
-              <li><router-link class="dropdown-item" to="/settings">Settings</router-link></li>
+              <li>
+                <router-link class="dropdown-item" to="/settings"
+                  >Settings</router-link
+                >
+              </li>
               <li><hr class="dropdown-divider" /></li>
-              <li><button class="dropdown-item btn-link" @click="logOut">Log out</button></li>
+              <li>
+                <button class="dropdown-item btn-link" @click="logOut">
+                  Log out
+                </button>
+              </li>
             </ul>
           </li>
           <li class="nav-item" v-else>

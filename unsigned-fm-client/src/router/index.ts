@@ -69,7 +69,6 @@ const router = createRouter({
 const publicPages = ['/', '/login', '/playlists'] as string[];
 router.beforeEach(async (to) => {
   const session = useSession();
-  await session.loadCsrfToken();
   await session.loadSession();
 
   if (!publicPages.includes(to.path) && !session.isLoggedIn) {
