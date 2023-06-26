@@ -179,6 +179,7 @@ export class SpotifyService {
     route: string,
     method: 'POST' | 'GET',
     data?: any,
+    params?: any,
     retryOnFailure?: boolean,
   ): Promise<AxiosResponse<any, any>> {
     const token = await this.getOrRefreshSpotifyUserAccessToken(true);
@@ -188,6 +189,7 @@ export class SpotifyService {
         url: this.spotifyApiBaseUrl + '/' + route,
         method,
         data,
+        params,
         headers: { Authorization: 'Bearer ' + token },
       }),
     ).catch(async (e: any) => {

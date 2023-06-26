@@ -23,7 +23,7 @@ export class Song {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ nullable: true })
   albumImage: string;
 
   @Column()

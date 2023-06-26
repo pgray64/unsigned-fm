@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Playlist } from './playlist.entity';
 import { Song } from '../songs/song.entity';
+import { User } from '../users/user.entity';
 
 @Entity()
 export class PlaylistSong {
@@ -31,4 +32,11 @@ export class PlaylistSong {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @OneToOne(() => User)
+  @JoinColumn()
+  @Index()
+  user: User;
+  @Column()
+  userId: number;
 }

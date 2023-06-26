@@ -11,7 +11,7 @@ import { addDays } from 'date-fns';
 @Injectable()
 export class SongsService {
   private maxArtistCount = 3; // Only process the first X artists
-  private songCacheDays = 7;
+  // private songCacheDays = 7;
 
   constructor(
     @InjectRepository(Song)
@@ -22,6 +22,9 @@ export class SongsService {
   private async save(spotifyTrack: SpotifyTrackDto): Promise<Song> {
     const spotifyTrackId = spotifyTrack.spotifyTrackId;
     const spotifyArtists = spotifyTrack.artists?.slice(0, this.maxArtistCount);
+    // TODO need to grab artists separately as this response lacks follower count
+    throw 'todo';
+
     // This is poorly optimized, but the vast majority of songs have a single artist,
     // and we are capping it, so it does not really matter
     const artistList = [] as Artist[];
@@ -30,7 +33,10 @@ export class SongsService {
     }
 
     const song =
-      (await this.songRepository.findOneBy({ spotifyTrackId })) ??
+      (await this.songRepository.findOne({
+        where: { spotifyTrackId },
+        relations: ['artists'],
+      })) ??
       ({
         spotifyTrackId,
       } as Song);
@@ -44,8 +50,11 @@ export class SongsService {
     // todo: re-encode and save track image
   }
   async getOrCreate(spotifyTrackId: string): Promise<Song> {
-    const song = await this.songRepository.findOneBy({ spotifyTrackId });
-    if (song && addDays(song.updatedAt, this.songCacheDays) > new Date()) {
+    const song = await this.songRepository.findOne({
+      where: { spotifyTrackId },
+      relations: ['artists'],
+    });
+    if (song /*&& addDays(song.updatedAt, this.songCacheDays) > new Date()*/) {
       return song;
     }
     const spotifyTrack = await this.spotifyApiService.getTrack(spotifyTrackId);

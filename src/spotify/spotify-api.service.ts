@@ -31,6 +31,7 @@ export class SpotifyApiService {
     const response = await this.spotifyService.performApiRequest(
       'tracks/' + spotifyTrackId,
       'GET',
+      undefined,
       { market },
     );
     return {

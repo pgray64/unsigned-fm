@@ -6,6 +6,7 @@ const isLoading = ref(false);
 const apiClient = useApiClient();
 const playlists = ref([] as any[]);
 const selectedPlaylistId = ref(undefined as any);
+const selectedTrack = ref(undefined as string | undefined);
 
 onMounted(async () => {
   await loadPlaylists();
@@ -32,7 +33,27 @@ async function loadPlaylists() {
     isLoading.value = false;
   }
 }
-async function handleSubmit() {}
+async function handleSubmit() {
+  let result: any;
+  try {
+    result = await apiClient.post('/internal/playlists/add-song', {
+      trackId: selectedTrack.value,
+      playlistId: selectedPlaylistId.value,
+    });
+  } catch (e) {
+    console.log(
+      JSON.stringify(result),
+      '\n>>>>>>>>>>>>>>>>>>>\n',
+      JSON.stringify(e),
+    );
+    apiClient.displayGenericError(
+      e,
+      result?.error ?? 'Song could not be added',
+    );
+  } finally {
+    isLoading.value = false;
+  }
+}
 </script>
 
 <template>
@@ -83,6 +104,7 @@ async function handleSubmit() {}
               aria-describedby="track-id-addon"
               placeholder="spotify-track-id"
               required
+              v-model="selectedTrack"
             />
           </div>
           <div class="mt-3 text-end">
