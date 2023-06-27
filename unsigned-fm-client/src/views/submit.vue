@@ -2,6 +2,7 @@
 import LoadingSpinner from '@/components/loading-spinner.vue';
 import { computed, onMounted, ref } from 'vue';
 import { useApiClient } from '@/composables/api-client/use-api-client';
+import { toast } from 'vue3-toastify';
 const isLoading = ref(false);
 const apiClient = useApiClient();
 const playlists = ref([] as any[]);
@@ -40,6 +41,9 @@ async function handleSubmit() {
       trackId: selectedTrack.value,
       playlistId: selectedPlaylistId.value,
     });
+    toast.success('Song added to playlist!');
+    selectedTrack.value = '';
+    selectedPlaylistId.value = '';
   } catch (e: any) {
     apiClient.displayGenericError(e, 'Song could not be added');
   } finally {
