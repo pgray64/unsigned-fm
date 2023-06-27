@@ -29,15 +29,17 @@ export class SongsService {
       });
     const spotifyArtistsToUpdate =
       await this.artistsService.getArtistsNeedingUpdate(spotifyArtistsIds);
-    const spotifyArtistResponse = await this.spotifyApiService.getArtists(
-      spotifyArtistsToUpdate,
-    );
 
-    // This is poorly optimized, but the vast majority of songs have a single artist,
-    // and we are capping it, so it does not really matter
-    const artistList = [] as Artist[];
-    for (const artist of spotifyArtistResponse) {
-      artistList.unshift(await this.artistsService.createOrUpdate(artist));
+    if (spotifyArtistsToUpdate.length > 0) {
+      const updatdSpotifyArtistResponse =
+        await this.spotifyApiService.getArtists(spotifyArtistsToUpdate);
+
+      // This is poorly optimized, but the vast majority of songs have a single artist,
+      // and we are capping it, so it does not really matter
+
+      for (const artist of updatdSpotifyArtistResponse) {
+        await this.artistsService.createOrUpdate(artist);
+      }
     }
 
     const song =
@@ -51,7 +53,9 @@ export class SongsService {
 
     song.spotifyAlbumId = spotifyTrack.spotifyAlbumId;
     song.name = spotifyTrack.name;
-    song.artists = artistList;
+    song.artists = await this.artistsService.findBySpotifyIds(
+      spotifyArtistsIds,
+    );
 
     return await this.songRepository.save(song);
 

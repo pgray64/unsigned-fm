@@ -44,4 +44,9 @@ export class ArtistsService {
       return upToDateSpotifyArtists.indexOf(artist) < 0;
     });
   }
+  async findBySpotifyIds(spotifyArtistIds: string[]): Promise<Artist[]> {
+    return await this.artistRepository.findBy({
+      spotifyArtistId: In(spotifyArtistIds),
+    });
+  }
 }

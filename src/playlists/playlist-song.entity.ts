@@ -4,6 +4,7 @@ import {
   Entity,
   Index,
   JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -16,14 +17,14 @@ export class PlaylistSong {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => Playlist)
+  @ManyToOne(() => Playlist)
   @JoinColumn()
   @Index()
   playlist: Playlist;
   @Column()
   playlistId: number;
 
-  @OneToOne(() => Song)
+  @ManyToOne(() => Song)
   @JoinColumn()
   @Index()
   song: Song;
@@ -33,7 +34,7 @@ export class PlaylistSong {
   @CreateDateColumn()
   createdAt: Date;
 
-  @OneToOne(() => User)
+  @ManyToOne(() => User)
   @JoinColumn()
   @Index()
   user: User;
