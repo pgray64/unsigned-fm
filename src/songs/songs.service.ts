@@ -7,10 +7,11 @@ import { ArtistsService } from '../artists/artists.service';
 import { SpotifyTrackDto } from '../spotify/spotify-track.dto';
 import { Artist } from '../artists/artist.entity';
 import { addDays } from 'date-fns';
+import { SpotifyArtistDto } from '../spotify/spotify-artist.dto';
 
 @Injectable()
 export class SongsService {
-  private maxArtistCount = 3; // Only process the first X artists
+  private maxArtistCount = 5; // Only process the first X artists
   // private songCacheDays = 7;
 
   constructor(
@@ -21,14 +22,21 @@ export class SongsService {
   ) {}
   private async save(spotifyTrack: SpotifyTrackDto): Promise<Song> {
     const spotifyTrackId = spotifyTrack.spotifyTrackId;
-    const spotifyArtists = spotifyTrack.artists?.slice(0, this.maxArtistCount);
-    // TODO need to grab artists separately as this response lacks follower count
-    throw 'todo';
+    const spotifyArtistsIds = spotifyTrack.artists
+      ?.slice(0, this.maxArtistCount)
+      ?.map((artist: SpotifyArtistDto) => {
+        return artist.spotifyArtistId;
+      });
+    const spotifyArtistsToUpdate =
+      await this.artistsService.getArtistsNeedingUpdate(spotifyArtistsIds);
+    const spotifyArtistResponse = await this.spotifyApiService.getArtists(
+      spotifyArtistsToUpdate,
+    );
 
     // This is poorly optimized, but the vast majority of songs have a single artist,
     // and we are capping it, so it does not really matter
     const artistList = [] as Artist[];
-    for (const artist of spotifyArtists) {
+    for (const artist of spotifyArtistResponse) {
       artistList.unshift(await this.artistsService.createOrUpdate(artist));
     }
 

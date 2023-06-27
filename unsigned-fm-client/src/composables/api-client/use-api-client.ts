@@ -15,9 +15,11 @@ export function useApiClient() {
       headers: getHeaders(),
     });
   }
-  function displayGenericError(e: any, errMessage?: string) {
+  function displayApiError(e: any, errMessage?: string) {
     console.error(e);
-    if (errMessage) {
+    if (e?.response?.data?.error) {
+      toast.error(e?.response?.data?.error);
+    } else if (errMessage) {
       toast.error(errMessage);
     } else if (e?.response?.status === 401) {
       toast.error('You need to be logged in to do that');
@@ -34,7 +36,7 @@ export function useApiClient() {
   return {
     get,
     post,
-    displayGenericError: displayGenericError,
+    displayGenericError: displayApiError,
     authTokenCookieName,
   };
 }

@@ -44,11 +44,9 @@ export class SpotifyApiService {
       spotifyAlbumId: response.data.album?.id,
       artists: response.data.artists?.map((artist: any): SpotifyArtistDto => {
         return {
+          // note spotify returns a simplified artist object here
           spotifyArtistId: artist.id,
           name: artist.name,
-          artistImage:
-            artist.images?.length > 0 ? artist.images[0].url : undefined,
-          followers: artist.followers?.total ?? 0,
         };
       }),
     };
@@ -66,5 +64,24 @@ export class SpotifyApiService {
           ? response.data.image[0].url
           : undefined,
     };
+  }
+
+  async getArtists(spotifyArtistIds: string[]): Promise<SpotifyArtistDto[]> {
+    const joinedIds = spotifyArtistIds.join(',');
+    const response = await this.spotifyService.performApiRequest(
+      'artists',
+      'GET',
+      undefined,
+      { ids: joinedIds },
+    );
+    return response.data.artists?.map((artist: any) => {
+      return {
+        spotifyArtistId: artist.id,
+        name: artist.name,
+        artistImage:
+          artist.images?.length > 0 ? artist.images[0].url : undefined,
+        followers: artist.followers?.total ?? 0,
+      } as SpotifyArtistDto;
+    });
   }
 }

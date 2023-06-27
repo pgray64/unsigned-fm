@@ -40,16 +40,8 @@ async function handleSubmit() {
       trackId: selectedTrack.value,
       playlistId: selectedPlaylistId.value,
     });
-  } catch (e) {
-    console.log(
-      JSON.stringify(result),
-      '\n>>>>>>>>>>>>>>>>>>>\n',
-      JSON.stringify(e),
-    );
-    apiClient.displayGenericError(
-      e,
-      result?.error ?? 'Song could not be added',
-    );
+  } catch (e: any) {
+    apiClient.displayGenericError(e, 'Song could not be added');
   } finally {
     isLoading.value = false;
   }
