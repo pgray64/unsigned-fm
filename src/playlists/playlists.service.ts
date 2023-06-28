@@ -71,6 +71,11 @@ export class PlaylistsService {
       playlistId,
       userId,
     });
+    await this.playlistRepository.increment(
+      { id: playlistId },
+      'submissionCount',
+      1,
+    );
   }
   async isSongDuplicatedInPlaylist(songId: number, playlistId: number) {
     return await this.playlistSongRepository.exist({

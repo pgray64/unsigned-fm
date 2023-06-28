@@ -33,4 +33,7 @@ export class Playlist {
 
   @DeleteDateColumn()
   deletedAt?: Date;
+
+  @Column({ default: 0 })
+  submissionCount: number;
 }
