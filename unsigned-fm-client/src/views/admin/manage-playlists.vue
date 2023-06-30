@@ -57,6 +57,7 @@ async function updatePlaylist(playlist: any, isRestore: boolean) {
   } finally {
     isLoading.value = false;
   }
+  await loadPlaylists();
 }
 async function removePlaylist(playlistId: number) {
   isLoading.value = true;

@@ -31,6 +31,7 @@ export class AdminPlaylistsController {
           spotifyPlaylistId: playlist.spotifyPlaylistId,
           spotifyPlaylistUrl: `${this.spotifyApiService.spotifyWebPlaylistUrl}/${playlist.spotifyPlaylistId}`,
           deletedAt: playlist.deletedAt,
+          submissionCount: playlist.submissionCount,
         };
       },
     );

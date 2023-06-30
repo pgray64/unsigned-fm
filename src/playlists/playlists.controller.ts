@@ -33,6 +33,7 @@ export class PlaylistsController {
           isRestricted: playlist.isRestricted,
           spotifyPlaylistId: playlist.spotifyPlaylistId,
           spotifyPlaylistUrl: `${this.spotifyApiService.spotifyWebPlaylistUrl}/${playlist.spotifyPlaylistId}`,
+          submissionCount: playlist.submissionCount,
         };
       },
     );
