@@ -1,4 +1,13 @@
-import { Controller, Get, Query, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  InternalServerErrorException,
+  Post,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { AdminJwtAuthGuard } from '../auth/admin-jwt-auth.guard';
 import { Request, Response } from 'express';
 import { SpotifyService } from '../spotify/spotify.service';
@@ -11,23 +20,22 @@ export class AdminController {
     private spotifyService: SpotifyService,
     private spotifyApiService: SpotifyApiService,
   ) {}
-  @Get('spotify/auth-redirect')
-  async spotifyAuthRedirect(
-    @Query('code') code: string,
-    @Res() response: Response,
-  ) {
+  @Post('spotify/update-access-token')
+  async spotifyUpdateAccessToken(@Body('code') code: string) {
     if (!code) {
-      return response.redirect('/admin/spotify-auth/error');
+      throw new BadRequestException('auth code', 'Auth code is missing');
     }
     const token =
       await this.spotifyService.updateSpotifyUserAccessTokenFromCode(
         code,
         false,
       );
-    if (token) {
-      return response.redirect('/admin/spotify-auth/success');
+    if (!token) {
+      throw new InternalServerErrorException(
+        'auth code redacted',
+        'Failed to update access token from code',
+      );
     }
-    return response.redirect('/admin/spotify-auth/error');
   }
 
   @Get('spotify/authorization-url')

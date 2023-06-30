@@ -76,12 +76,12 @@ async function removePlaylist(playlistId: number) {
   <div class="row">
     <div class="col-12">
       <h4><router-link to="/admin/home">Admin</router-link></h4>
-      <div class="mt-3">
+      <div class="mt-4">
         <h5>Playlists</h5>
-        <div v-if="isLoading" class="text-center">
+        <div v-if="isLoading" class="text-center mt-4">
           <loading-spinner></loading-spinner>
         </div>
-        <div v-else-if="playlists" class="justify-content-center">
+        <div v-else-if="playlists" class="justify-content-center mt-4">
           <div class="row">
             <div class="col-12 col-lg-6">
               <div class="card mb-3">

@@ -45,9 +45,9 @@ async function authorizeWithSpotify() {
       <div class="mt-3">
         <router-link to="/admin/playlists/manage">Playlists</router-link>
       </div>
-      <div class="mt-3">
+      <div class="mt-4">
         <h5>Spotify API User</h5>
-        <div>
+        <div class="mt-4">
           <button class="btn btn-primary me-2 mb-2" @click="getCurrentUser">
             Verify Spotify Token
           </button>

@@ -5,8 +5,8 @@ import SettingsView from '../views/settings.vue';
 import PlaylistsView from '../views/playlists.vue';
 import SubmitView from '../views/submit.vue';
 import AdminHome from '../views/admin/admin-home.vue';
-import SpotifyAuthStatus from '../views/admin/spotify-auth-status.vue';
 import ManagePlaylists from '../views/admin/manage-playlists.vue';
+import UpdateSpotifyToken from '@/views/admin/update-spotify-token.vue';
 
 import { useSession } from '@/stores/session';
 
@@ -46,23 +46,18 @@ const router = createRouter({
       component: AdminHome,
     },
     {
-      path: '/admin/spotify-auth/success',
-      name: 'spotifyAuthSuccess',
-      component: SpotifyAuthStatus,
-      props: { isSuccess: true },
-    },
-    {
-      path: '/admin/spotify-auth/error',
-      name: 'spotifyAuthError',
-      component: SpotifyAuthStatus,
-      props: { isSuccess: false },
-    },
-    {
       path: '/admin/playlists/manage',
-      name: 'managePlaylists',
+      name: 'adminManagePlaylists',
       component: ManagePlaylists,
       props: { isSuccess: false },
     },
+    {
+      path: '/admin/spotify/update-token',
+      name: 'adminUpdateSpotifyToken',
+      component: UpdateSpotifyToken,
+    },
+    // default redirect to home page
+    { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
 });
 
