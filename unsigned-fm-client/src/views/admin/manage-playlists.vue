@@ -185,6 +185,7 @@ async function removePlaylist(playlistId: number) {
                         <img
                           :src="playlist.playlistImageUrl"
                           style="max-height: 100px; max-width: 100px"
+                          class="rounded"
                         />
                       </div>
                     </li>
