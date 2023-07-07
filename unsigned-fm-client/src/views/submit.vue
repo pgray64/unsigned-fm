@@ -35,9 +35,9 @@ async function loadPlaylists() {
   }
 }
 async function handleSubmit() {
-  let result: any;
+  isLoading.value = true;
   try {
-    result = await apiClient.post('/internal/playlists/add-song', {
+    await apiClient.post('/internal/playlists/add-song', {
       trackId: selectedTrack.value,
       playlistId: selectedPlaylistId.value,
     });

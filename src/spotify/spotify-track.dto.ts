@@ -4,6 +4,6 @@ export interface SpotifyTrackDto {
   name: string;
   spotifyTrackId: string;
   artists: SpotifyArtistDto[];
-  albumImage: string;
+  albumImageUrl: string;
   spotifyAlbumId: string;
 }

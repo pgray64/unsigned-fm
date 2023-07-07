@@ -5,9 +5,8 @@ import { Song } from './song.entity';
 import { SpotifyApiService } from '../spotify/spotify-api.service';
 import { ArtistsService } from '../artists/artists.service';
 import { SpotifyTrackDto } from '../spotify/spotify-track.dto';
-import { Artist } from '../artists/artist.entity';
-import { addDays } from 'date-fns';
 import { SpotifyArtistDto } from '../spotify/spotify-artist.dto';
+import { ObjectStorageService } from '../object-storage/object-storage.service';
 
 @Injectable()
 export class SongsService {
@@ -19,6 +18,7 @@ export class SongsService {
     private songRepository: Repository<Song>,
     private spotifyApiService: SpotifyApiService,
     private artistsService: ArtistsService,
+    private objectStorageService: ObjectStorageService,
   ) {}
   private async save(spotifyTrack: SpotifyTrackDto): Promise<Song> {
     const spotifyTrackId = spotifyTrack.spotifyTrackId;
@@ -31,13 +31,13 @@ export class SongsService {
       await this.artistsService.getArtistsNeedingUpdate(spotifyArtistsIds);
 
     if (spotifyArtistsToUpdate.length > 0) {
-      const updatdSpotifyArtistResponse =
+      const updatedSpotifyArtistResponse =
         await this.spotifyApiService.getArtists(spotifyArtistsToUpdate);
 
       // This is poorly optimized, but the vast majority of songs have a single artist,
       // and we are capping it, so it does not really matter
 
-      for (const artist of updatdSpotifyArtistResponse) {
+      for (const artist of updatedSpotifyArtistResponse) {
         await this.artistsService.createOrUpdate(artist);
       }
     }
@@ -56,10 +56,16 @@ export class SongsService {
     song.artists = await this.artistsService.findBySpotifyIds(
       spotifyArtistsIds,
     );
-
+    if (spotifyTrack.albumImageUrl) {
+      const objectKey = this.objectStorageService.getUniqueObjectKey();
+      await this.objectStorageService.uploadObjectFromUrl({
+        urlToUpload: spotifyTrack.albumImageUrl,
+        key: objectKey,
+        isPublic: true,
+      });
+      song.albumImage = objectKey;
+    }
     return await this.songRepository.save(song);
-
-    // todo: re-encode and save track image
   }
   async getOrCreate(spotifyTrackId: string): Promise<Song> {
     const song = await this.songRepository.findOne({

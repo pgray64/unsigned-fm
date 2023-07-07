@@ -37,7 +37,7 @@ export class SpotifyApiService {
     return {
       spotifyTrackId: response.data.id,
       name: response.data.name,
-      albumImage:
+      albumImageUrl:
         response.data.album?.images?.length > 0
           ? response.data?.album?.images[0].url
           : undefined,
@@ -78,7 +78,7 @@ export class SpotifyApiService {
       return {
         spotifyArtistId: artist.id,
         name: artist.name,
-        artistImage:
+        artistImageUrl:
           artist.images?.length > 0 ? artist.images[0].url : undefined,
         followers: artist.followers?.total ?? 0,
       } as SpotifyArtistDto;

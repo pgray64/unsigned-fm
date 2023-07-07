@@ -2,6 +2,7 @@
 import LoadingSpinner from '@/components/loading-spinner.vue';
 import { onMounted, ref } from 'vue';
 import { useApiClient } from '@/composables/api-client/use-api-client';
+import ImageThumbnail from '@/components/image-thumbnail.vue';
 
 const isLoading = ref(false);
 const apiClient = useApiClient();
@@ -38,35 +39,45 @@ async function loadPlaylists() {
           v-for="playlist of playlists"
           v-bind:key="playlist.id"
         >
-          <div class="card">
+          <div class="card border-0 bg-light shadow-sm">
             <div class="card-body">
               <div class="card-text">
-                <div class="d-flex justify-content-between">
+                <div class="d-flex">
                   <div>
+                    <image-thumbnail
+                      :image-url="playlist.playlistImageUrl"
+                      :size-px="75"
+                    ></image-thumbnail>
+                  </div>
+                  <div class="flex-grow-1 ps-2">
                     <div>
-                      <router-link
-                        class="text-decoration-none"
-                        :to="`/playlist/${playlist.id}`"
-                        ><b>{{ playlist.name }}</b></router-link
-                      >
-                    </div>
-                    <div class="small">
-                      {{ playlist.submissionCount.toLocaleString() }}
-                      {{
-                        playlist.submissionCount === 1
-                          ? 'submission'
-                          : 'submissions'
-                      }}
+                      <div>
+                        <router-link
+                          class="text-decoration-none"
+                          :to="`/playlist/${playlist.id}`"
+                          ><b>{{ playlist.name }}</b></router-link
+                        >
+                      </div>
+                      <div class="small">
+                        {{ playlist.submissionCount.toLocaleString() }}
+                        {{
+                          playlist.submissionCount === 1
+                            ? 'submission'
+                            : 'submissions'
+                        }}
+                      </div>
                     </div>
                   </div>
 
-                  <a
-                    class="btn btn-outline-success btn-sm d-flex align-items-center"
-                    :href="`https://open.spotify.com/playlist/${playlist.spotifyPlaylistId}`"
-                    target="_blank"
-                  >
-                    <span> Open in <i class="bi bi-spotify"></i> Spotify </span>
-                  </a>
+                  <div>
+                    <a
+                      class="btn btn-outline-success btn-sm d-inline-block h-auto align-items-center"
+                      :href="`https://open.spotify.com/playlist/${playlist.spotifyPlaylistId}`"
+                      target="_blank"
+                    >
+                      <span> <i class="bi bi-spotify"></i> Spotify </span>
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>

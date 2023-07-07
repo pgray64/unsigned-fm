@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { In, MoreThan, Repository } from 'typeorm';
 import { Artist } from './artist.entity';
 import { subDays } from 'date-fns';
+import { ObjectStorageService } from '../object-storage/object-storage.service';
 
 @Injectable()
 export class ArtistsService {
@@ -11,6 +12,7 @@ export class ArtistsService {
   constructor(
     @InjectRepository(Artist)
     private artistRepository: Repository<Artist>,
+    private objectStorageService: ObjectStorageService,
   ) {}
   async createOrUpdate(spotifyArtist: SpotifyArtistDto): Promise<Artist> {
     const spotifyArtistId = spotifyArtist.spotifyArtistId;
@@ -25,7 +27,16 @@ export class ArtistsService {
     // Update properties that artists can change
     currentArtist.name = spotifyArtist.name;
     currentArtist.followers = spotifyArtist.followers;
-    // todo re-encode and save artist image
+
+    if (spotifyArtist.artistImageUrl) {
+      const objectKey = this.objectStorageService.getUniqueObjectKey();
+      await this.objectStorageService.uploadObjectFromUrl({
+        urlToUpload: spotifyArtist.artistImageUrl,
+        key: objectKey,
+        isPublic: true,
+      });
+      currentArtist.artistImage = objectKey;
+    }
 
     return await this.artistRepository.save(currentArtist);
   }

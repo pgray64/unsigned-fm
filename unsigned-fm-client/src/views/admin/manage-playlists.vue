@@ -2,6 +2,7 @@
 import LoadingSpinner from '@/components/loading-spinner.vue';
 import { computed, onMounted, ref } from 'vue';
 import { useApiClient } from '@/composables/api-client/use-api-client';
+import ImageThumbnail from '@/components/image-thumbnail.vue';
 
 const apiClient = useApiClient();
 const isLoading = ref(true);
@@ -181,13 +182,10 @@ async function removePlaylist(playlistId: number) {
                           Remove
                         </button>
                       </div>
-                      <div v-if="playlist.playlistImageUrl">
-                        <img
-                          :src="playlist.playlistImageUrl"
-                          style="max-height: 100px; max-width: 100px"
-                          class="rounded"
-                        />
-                      </div>
+                      <image-thumbnail
+                        :image-url="playlist.playlistImageUrl"
+                        :size-px="75"
+                      ></image-thumbnail>
                     </li>
                   </ul>
                   <p v-else><em>No playlists</em></p>
