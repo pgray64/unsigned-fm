@@ -6,4 +6,5 @@ export interface PlaylistSearchResultDto {
   spotifyPlaylistUrl: string;
   deletedAt?: Date;
   submissionCount: number;
+  playlistImageUrl: string | null;
 }

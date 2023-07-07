@@ -129,56 +129,64 @@ async function removePlaylist(playlistId: number) {
                 <div class="card-body">
                   <ul class="list-group" v-if="playlists.length > 0">
                     <li
-                      class="list-group-item"
+                      class="list-group-item d-flex"
                       v-for="playlist of playlists"
                       v-bind:key="playlist.id"
                     >
-                      <div class="mb-2">
-                        <b> {{ playlist.name }}</b>
+                      <div class="flex-grow-1">
+                        <div class="mb-2">
+                          <b> {{ playlist.name }}</b>
 
-                        <span
+                          <span
+                            v-if="playlist.deletedAt"
+                            class="text-danger text-small ms-2"
+                            ><i class="bi bi-eye-slash"></i> Hidden</span
+                          >
+                        </div>
+                        <div class="form-check form-switch">
+                          <input
+                            v-model="playlist.isRestricted"
+                            class="form-check-input"
+                            type="checkbox"
+                            role="switch"
+                            :id="`playlist-${playlist.id}-is-restricted`"
+                          />
+                          <label
+                            for="`playlist-${playlist.id}-is-restricted`"
+                            class="form-label"
+                            >Is Restricted</label
+                          >
+                        </div>
+                        <button
+                          class="btn btn-sm btn-primary d-inline"
+                          @click="updatePlaylist(playlist, false)"
+                        >
+                          <i class="bi bi-cloud-upload"></i>
+                          Update
+                        </button>
+                        <button
                           v-if="playlist.deletedAt"
-                          class="text-danger text-small ms-2"
-                          ><i class="bi bi-eye-slash"></i> Hidden</span
+                          class="btn btn-sm d-inline ms-2 btn-outline-success"
+                          @click="updatePlaylist(playlist, true)"
                         >
+                          <i class="bi bi-arrow-counterclockwise"></i>
+                          Restore
+                        </button>
+                        <button
+                          v-else
+                          class="btn btn-sm d-inline ms-2 btn-outline-danger"
+                          @click="removePlaylist(playlist.id)"
+                        >
+                          <i class="bi bi-trash"></i>
+                          Remove
+                        </button>
                       </div>
-                      <div class="form-check form-switch">
-                        <input
-                          v-model="playlist.isRestricted"
-                          class="form-check-input"
-                          type="checkbox"
-                          role="switch"
-                          :id="`playlist-${playlist.id}-is-restricted`"
+                      <div v-if="playlist.playlistImageUrl">
+                        <img
+                          :src="playlist.playlistImageUrl"
+                          style="max-height: 100px; max-width: 100px"
                         />
-                        <label
-                          for="`playlist-${playlist.id}-is-restricted`"
-                          class="form-label"
-                          >Is Restricted</label
-                        >
                       </div>
-                      <button
-                        class="btn btn-sm btn-primary d-inline"
-                        @click="updatePlaylist(playlist, false)"
-                      >
-                        <i class="bi bi-cloud-upload"></i>
-                        Update
-                      </button>
-                      <button
-                        v-if="playlist.deletedAt"
-                        class="btn btn-sm d-inline ms-2 btn-outline-success"
-                        @click="updatePlaylist(playlist, true)"
-                      >
-                        <i class="bi bi-arrow-counterclockwise"></i>
-                        Restore
-                      </button>
-                      <button
-                        v-else
-                        class="btn btn-sm d-inline ms-2 btn-outline-danger"
-                        @click="removePlaylist(playlist.id)"
-                      >
-                        <i class="bi bi-trash"></i>
-                        Remove
-                      </button>
                     </li>
                   </ul>
                   <p v-else><em>No playlists</em></p>

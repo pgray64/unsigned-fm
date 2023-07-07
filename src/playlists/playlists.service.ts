@@ -6,6 +6,7 @@ import { SpotifyApiService } from '../spotify/spotify-api.service';
 import { SongsService } from '../songs/songs.service';
 import { PlaylistSong } from './playlist-song.entity';
 import { subDays } from 'date-fns';
+import { ObjectStorageService } from '../object-storage/object-storage.service';
 
 @Injectable()
 export class PlaylistsService {
@@ -18,6 +19,7 @@ export class PlaylistsService {
     private songsService: SongsService,
     @InjectRepository(PlaylistSong)
     private playlistSongRepository: Repository<PlaylistSong>,
+    private objectStorageService: ObjectStorageService,
   ) {}
   async getAll(withDeleted: boolean): Promise<Playlist[]> {
     const playlists = await this.playlistRepository.find({
@@ -35,8 +37,18 @@ export class PlaylistsService {
     const spotifyData = await this.spotifyApiService.getPlaylist(
       playlist.spotifyPlaylistId,
     );
+
+    // properties to update:
     playlist.name = spotifyData.name;
-    // todo update image
+    if (spotifyData.playlistImageUrl) {
+      const objectKey = this.objectStorageService.getUniqueObjectKey();
+      await this.objectStorageService.uploadObjectFromUrl({
+        urlToUpload: spotifyData.playlistImageUrl,
+        key: objectKey,
+        isPublic: true,
+      });
+      playlist.playlistImage = objectKey;
+    }
     await this.playlistRepository.save(playlist, {});
   }
   async addSongToPlaylist(

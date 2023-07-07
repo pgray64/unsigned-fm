@@ -59,9 +59,9 @@ export class SpotifyApiService {
     return {
       spotifyPlaylistId: response.data.id,
       name: response.data.name,
-      playlistImage:
+      playlistImageUrl:
         response.data.images?.length > 0
-          ? response.data.image[0].url
+          ? response.data.images[0].url
           : undefined,
     };
   }

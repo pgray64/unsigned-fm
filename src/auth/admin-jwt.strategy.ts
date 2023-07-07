@@ -21,6 +21,7 @@ export class AdminJwtStrategy extends PassportStrategy(Strategy, 'admin-jwt') {
   }
 
   async validate(payload: JwtPayloadDto) {
+    // Important enough to hit the DB each request
     const isAdmin = await this.adminService.isUserAnAdmin(payload.userId);
     if (!isAdmin) {
       throw new UnauthorizedException();

@@ -4,6 +4,7 @@ import { Playlist } from '../playlists/playlist.entity';
 import { PlaylistsService } from '../playlists/playlists.service';
 import { PlaylistSearchResultDto } from '../playlists/playlist-search-result.dto';
 import { SpotifyApiService } from '../spotify/spotify-api.service';
+import { ObjectStorageService } from '../object-storage/object-storage.service';
 
 @Controller('internal/admin/playlists')
 @UseGuards(AdminJwtAuthGuard)
@@ -11,6 +12,7 @@ export class AdminPlaylistsController {
   constructor(
     private playlistsService: PlaylistsService,
     private spotifyApiService: SpotifyApiService,
+    private objectStorageService: ObjectStorageService,
   ) {}
   @Post('save')
   async save(@Body() playlist: Playlist) {
@@ -32,6 +34,9 @@ export class AdminPlaylistsController {
           spotifyPlaylistUrl: `${this.spotifyApiService.spotifyWebPlaylistUrl}/${playlist.spotifyPlaylistId}`,
           deletedAt: playlist.deletedAt,
           submissionCount: playlist.submissionCount,
+          playlistImageUrl: this.objectStorageService.getFullObjectUrl(
+            playlist.playlistImage,
+          ),
         };
       },
     );

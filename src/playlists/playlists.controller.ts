@@ -15,12 +15,14 @@ import { SpotifyApiService } from '../spotify/spotify-api.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Request } from 'express';
 import { JwtPayloadDto } from '../auth/jwt-payload.dto';
+import { ObjectStorageService } from '../object-storage/object-storage.service';
 
 @Controller('internal/playlists')
 export class PlaylistsController {
   constructor(
     private playlistsService: PlaylistsService,
     private spotifyApiService: SpotifyApiService,
+    private objectStorageService: ObjectStorageService,
   ) {}
 
   @Get('all')
@@ -34,6 +36,9 @@ export class PlaylistsController {
           spotifyPlaylistId: playlist.spotifyPlaylistId,
           spotifyPlaylistUrl: `${this.spotifyApiService.spotifyWebPlaylistUrl}/${playlist.spotifyPlaylistId}`,
           submissionCount: playlist.submissionCount,
+          playlistImageUrl: this.objectStorageService.getFullObjectUrl(
+            playlist.playlistImage,
+          ),
         };
       },
     );
