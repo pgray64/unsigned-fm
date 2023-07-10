@@ -18,15 +18,24 @@ export class UsersService {
     return this.usersRepository.findOneBy(filter);
   }
   async findOneById(id: number): Promise<User> {
+    if (!id) {
+      return null;
+    }
     return this.usersRepository.findOneBy({ id });
   }
   async remove(id: number): Promise<void> {
+    if (!id) {
+      return null;
+    }
     await this.usersRepository.softDelete(id);
   }
   async createOrUpdateUser(
     newUser: UserAuthDataDto,
     provider: AuthProviderEnum,
   ): Promise<User> {
+    if (!newUser.email) {
+      return null;
+    }
     const storedCreds = await this.federatedCredentialsRepository.findOneBy({
       provider: provider,
       subject: newUser.email,

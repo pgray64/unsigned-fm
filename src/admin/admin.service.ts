@@ -10,6 +10,9 @@ export class AdminService {
     private adminRepository: Repository<Admin>,
   ) {}
   async isUserAnAdmin(userId: number): Promise<boolean> {
+    if (!userId) {
+      return false;
+    }
     return this.adminRepository.exist({ where: { userId } });
   }
 }

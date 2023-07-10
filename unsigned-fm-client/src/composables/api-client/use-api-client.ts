@@ -5,9 +5,13 @@ import { useCookies } from 'vue3-cookies';
 const authTokenCookieName = 'auth_token';
 export function useApiClient() {
   const cookies = useCookies();
-  async function get(route: string): Promise<AxiosResponse | any> {
+  async function get(
+    route: string,
+    data?: any | undefined,
+  ): Promise<AxiosResponse | any> {
     return await axios.get(route, {
       headers: getHeaders(),
+      params: data,
     });
   }
   async function post(route: string, data: any): Promise<AxiosResponse | any> {

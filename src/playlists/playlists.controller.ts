@@ -4,7 +4,9 @@ import {
   Controller,
   Get,
   Logger,
+  NotFoundException,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -16,7 +18,11 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Request } from 'express';
 import { JwtPayloadDto } from '../auth/jwt-payload.dto';
 import { ObjectStorageService } from '../object-storage/object-storage.service';
+import { PlaylistSongResultDto } from './playlist-song-result.dto';
+import { PlaylistSong } from './playlist-song.entity';
+import { Artist } from '../artists/artist.entity';
 
+const playlistSongResultCount = 10;
 @Controller('internal/playlists')
 export class PlaylistsController {
   constructor(
@@ -61,5 +67,53 @@ export class PlaylistsController {
       playlistId,
       userJwt.userId,
     );
+  }
+
+  @Get('playlist-songs')
+  async getPlaylistSongs(
+    @Query('playlistId') playlistId: number,
+    @Query('page') page: number,
+  ): Promise<PlaylistSongResultDto> {
+    if (!playlistId) {
+      throw new BadRequestException();
+    }
+    const playlist = await this.playlistsService.getSingle(playlistId);
+    if (!playlist) {
+      throw new NotFoundException(playlistId, 'Playlist not found');
+    }
+    const songs = await this.playlistsService.listPlaylistSongs(
+      playlistId,
+      playlistSongResultCount,
+      page,
+    );
+    return {
+      totalCount: playlist.submissionCount,
+      perPage: playlistSongResultCount,
+      playlist: {
+        id: playlist.id,
+        name: playlist.name,
+        isRestricted: playlist.isRestricted,
+        spotifyPlaylistId: playlist.spotifyPlaylistId,
+        spotifyPlaylistUrl: `${this.spotifyApiService.spotifyWebPlaylistUrl}/${playlist.spotifyPlaylistId}`,
+        submissionCount: playlist.submissionCount,
+        playlistImageUrl: this.objectStorageService.getFullObjectUrl(
+          playlist.playlistImage,
+        ),
+      },
+      songs: songs.map((s: PlaylistSong) => {
+        return {
+          id: s.songId,
+          name: s.song.name,
+          albumImageUrl: this.objectStorageService.getFullObjectUrl(
+            s.song.albumImage,
+          ),
+          spotifyTrackId: s.song.spotifyTrackId,
+          spotifyTrackUrl: `${this.spotifyApiService.spotifyWebTrackUrl}/${s.song.spotifyTrackId}`,
+          artists: s.song.artists.map((a: Artist) => {
+            return a.name;
+          }),
+        };
+      }),
+    };
   }
 }

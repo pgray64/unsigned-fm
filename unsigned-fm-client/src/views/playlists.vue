@@ -72,7 +72,7 @@ async function loadPlaylists() {
                   <div>
                     <a
                       class="btn btn-outline-success btn-sm d-inline-block h-auto align-items-center"
-                      :href="`https://open.spotify.com/playlist/${playlist.spotifyPlaylistId}`"
+                      :href="playlist.spotifyPlaylistUrl"
                       target="_blank"
                     >
                       <span> <i class="bi bi-spotify"></i> Spotify </span>

@@ -10,6 +10,7 @@ export class SpotifyApiService {
   constructor(private spotifyService: SpotifyService) {}
 
   readonly spotifyWebPlaylistUrl = 'https://open.spotify.com/playlist';
+  readonly spotifyWebTrackUrl = 'https://open.spotify.com/track';
 
   async getUserProfile(): Promise<SpotifyUserDto> {
     const response = await this.spotifyService.performApiRequest('me', 'GET');

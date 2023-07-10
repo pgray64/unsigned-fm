@@ -23,6 +23,14 @@ export class PlaylistsService {
     private objectStorageService: ObjectStorageService,
     private rankingService: RankingService,
   ) {}
+  async getSingle(playlistId: number) {
+    if (!playlistId) {
+      return null;
+    }
+    return await this.playlistRepository.findOneBy({
+      id: playlistId,
+    });
+  }
   async getAll(withDeleted: boolean): Promise<Playlist[]> {
     const playlists = await this.playlistRepository.find({
       order: { hotScore: 'desc' },
@@ -61,6 +69,9 @@ export class PlaylistsService {
     playlistId: number,
     userId: number,
   ) {
+    if (!playlistId) {
+      return;
+    }
     const song = await this.songsService.getOrCreate(spotifyTrackId);
     const playlist = await this.playlistRepository.findOneBy({
       id: playlistId,
@@ -107,12 +118,15 @@ export class PlaylistsService {
     });
   }
   async listPlaylistSongs(playlistId: number, resultCount: number, page = 0) {
+    if (!playlistId) {
+      return null;
+    }
     return await this.playlistSongRepository.find({
       where: {
         playlistId,
       },
       order: { hotScore: 'desc' },
-      relations: ['songs'],
+      relations: ['song', 'song.artists'],
       take: resultCount,
       skip: resultCount * page,
     });

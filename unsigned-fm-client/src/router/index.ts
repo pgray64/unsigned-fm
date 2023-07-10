@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import HomeView from '../views/home.vue';
 import LoginView from '../views/login.vue';
 import SettingsView from '../views/settings.vue';
 import PlaylistsView from '../views/playlists.vue';
@@ -7,6 +6,7 @@ import SubmitView from '../views/submit.vue';
 import AdminHome from '../views/admin/admin-home.vue';
 import ManagePlaylists from '../views/admin/manage-playlists.vue';
 import UpdateSpotifyToken from '@/views/admin/update-spotify-token.vue';
+import PlaylistView from '../views/playlist.vue';
 
 import { useSession } from '@/stores/session';
 
@@ -40,6 +40,11 @@ const router = createRouter({
       name: 'submit',
       component: SubmitView,
     },
+    {
+      path: '/playlist/:playlistId',
+      name: 'playlist',
+      component: PlaylistView,
+    },
     // Admin routes
     {
       path: '/admin/home',
@@ -62,12 +67,15 @@ const router = createRouter({
   ],
 });
 
-const publicPages = ['/', '/login', '/playlists'] as string[];
+const publicPageNames = ['home', 'login', 'playlists', 'playlist'] as (
+  | string
+  | symbol
+)[];
 router.beforeEach(async (to) => {
   const session = useSession();
   await session.loadSession();
 
-  if (!publicPages.includes(to.path) && !session.isLoggedIn) {
+  if (!publicPageNames.includes(to.name ?? '') && !session.isLoggedIn) {
     return '/login';
   }
   if (
