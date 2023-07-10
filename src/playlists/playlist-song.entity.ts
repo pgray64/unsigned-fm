@@ -40,4 +40,8 @@ export class PlaylistSong {
   user: User;
   @Column()
   userId: number;
+
+  @Column({ default: 0, type: 'double precision' })
+  @Index()
+  hotScore: number;
 }

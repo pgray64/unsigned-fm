@@ -19,6 +19,7 @@ import { PlaylistsModule } from './playlists/playlists.module';
 import { Playlist } from './playlists/playlist.entity';
 import { PlaylistSong } from './playlists/playlist-song.entity';
 import { ObjectStorageModule } from './object-storage/object-storage.module';
+import { UtilsModule } from './utils/utils.module';
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { ObjectStorageModule } from './object-storage/object-storage.module';
     ArtistsModule,
     PlaylistsModule,
     ObjectStorageModule,
+    UtilsModule,
   ],
   controllers: [],
   providers: [],

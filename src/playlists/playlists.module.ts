@@ -8,6 +8,7 @@ import { SpotifyModule } from '../spotify/spotify.module';
 import { SongsModule } from '../songs/songs.module';
 import { ArtistsModule } from '../artists/artists.module';
 import { ObjectStorageModule } from '../object-storage/object-storage.module';
+import { UtilsModule } from '../utils/utils.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ObjectStorageModule } from '../object-storage/object-storage.module';
     SongsModule,
     ArtistsModule,
     ObjectStorageModule,
+    UtilsModule,
   ],
   providers: [PlaylistsService],
   controllers: [PlaylistsController],

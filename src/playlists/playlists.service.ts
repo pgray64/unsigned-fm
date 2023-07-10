@@ -7,6 +7,7 @@ import { SongsService } from '../songs/songs.service';
 import { PlaylistSong } from './playlist-song.entity';
 import { subDays } from 'date-fns';
 import { ObjectStorageService } from '../object-storage/object-storage.service';
+import { RankingService } from '../utils/ranking.service';
 
 @Injectable()
 export class PlaylistsService {
@@ -20,6 +21,7 @@ export class PlaylistsService {
     @InjectRepository(PlaylistSong)
     private playlistSongRepository: Repository<PlaylistSong>,
     private objectStorageService: ObjectStorageService,
+    private rankingService: RankingService,
   ) {}
   async getAll(withDeleted: boolean): Promise<Playlist[]> {
     const playlists = await this.playlistRepository.find({
@@ -48,6 +50,9 @@ export class PlaylistsService {
         isPublic: true,
       });
       playlist.playlistImage = objectKey;
+    }
+    if (!playlist.hotScore) {
+      playlist.hotScore = this.rankingService.getHotScore(0);
     }
     await this.playlistRepository.save(playlist, {});
   }
@@ -82,6 +87,7 @@ export class PlaylistsService {
       songId: song.id,
       playlistId,
       userId,
+      hotScore: this.rankingService.getHotScore(0),
     });
     await this.playlistRepository.increment(
       { id: playlistId },
@@ -98,6 +104,17 @@ export class PlaylistsService {
           subDays(new Date(), this.daysBetweenDuplicatePlaylistSubmissions),
         ),
       },
+    });
+  }
+  async listPlaylistSongs(playlistId: number, resultCount: number, page = 0) {
+    return await this.playlistSongRepository.find({
+      where: {
+        playlistId,
+      },
+      order: { hotScore: 'desc' },
+      relations: ['songs'],
+      take: resultCount,
+      skip: resultCount * page,
     });
   }
 }

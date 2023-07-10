@@ -21,7 +21,7 @@ export class Playlist {
   @Column({ nullable: true })
   playlistImage: string;
 
-  @Column({ default: 0 })
+  @Column({ default: 0, type: 'double precision' })
   @Index()
   hotScore: number;
 
