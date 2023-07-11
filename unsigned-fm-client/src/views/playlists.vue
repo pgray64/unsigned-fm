@@ -39,7 +39,7 @@ async function loadPlaylists() {
           v-for="playlist of playlists"
           v-bind:key="playlist.id"
         >
-          <div class="card border-0 bg-light shadow-sm">
+          <div class="card">
             <div class="card-body">
               <div class="card-text">
                 <div class="d-flex">

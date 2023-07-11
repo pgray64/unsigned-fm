@@ -75,7 +75,7 @@ async function authorizeWithSpotify() {
               </div>
             </li>
             <li class="list-group-item" v-if="user.imageUrl">
-              <img :src="user.imageUrl" height="200" width="200" />
+              <img :src="user.imageUrl" style="max-width: 150px" />
             </li>
           </ul>
         </div>

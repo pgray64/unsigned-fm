@@ -87,7 +87,7 @@ async function loadPlaylists() {
           v-for="song of songs"
           v-bind:key="song.id"
         >
-          <div class="card border-0 bg-light shadow-sm">
+          <div class="card">
             <div class="card-body">
               <div class="card-text">
                 <div class="d-flex">
