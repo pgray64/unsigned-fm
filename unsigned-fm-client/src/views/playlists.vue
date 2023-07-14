@@ -59,7 +59,15 @@ async function loadPlaylists() {
                         >
                       </div>
                       <div class="small">
-                        {{ playlist.submissionCount.toLocaleString() }}
+                        {{
+                          (playlist.submissionCount as number).toLocaleString(
+                            undefined,
+                            {
+                              notation: 'compact',
+                              maximumFractionDigits: 2,
+                            },
+                          )
+                        }}
                         {{
                           playlist.submissionCount === 1
                             ? 'submission'

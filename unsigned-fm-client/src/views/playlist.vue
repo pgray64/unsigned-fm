@@ -5,6 +5,7 @@ import { useApiClient } from '@/composables/api-client/use-api-client';
 import ImageThumbnail from '@/components/image-thumbnail.vue';
 import { useRoute } from 'vue-router';
 import Pagination from '@/components/pagination.vue';
+import Voting from '@/components/voting.vue';
 
 const isLoading = ref(false);
 const apiClient = useApiClient();
@@ -83,11 +84,12 @@ async function loadPlaylists() {
 
       <div class="mt-5 row d-lg-block">
         <div
-          class="col-12 col-lg-6 mb-3"
+          class="col-12 col-lg-6 mb-3 d-flex align-items-center"
           v-for="song of songs"
           v-bind:key="song.id"
         >
-          <div class="card">
+          <voting class="me-3"></voting>
+          <div class="card flex-grow-1">
             <div class="card-body">
               <div class="card-text">
                 <div class="d-flex">
