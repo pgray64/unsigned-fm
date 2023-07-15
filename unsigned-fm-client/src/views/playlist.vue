@@ -53,6 +53,25 @@ async function loadPlaylists() {
     isLoading.value = false;
   }
 }
+async function updateVote(
+  playlistSongId: number,
+  newValue: number,
+  newNetVotes: number,
+) {
+  try {
+    await apiClient.post('/internal/playlists/playlist-song-vote', {
+      playlistSongId: playlistSongId,
+      voteValue: newValue,
+    });
+    const currSongs = songs.value.filter((s) => s.id === playlistSongId);
+    if (currSongs.length > 0) {
+      currSongs[0].userVoteValue = newValue;
+      currSongs[0].netVotes = newNetVotes;
+    }
+  } catch (e) {
+    apiClient.displayGenericError(e, 'Failed to update vote');
+  }
+}
 </script>
 
 <template>
@@ -88,7 +107,13 @@ async function loadPlaylists() {
           v-for="song of songs"
           v-bind:key="song.id"
         >
-          <voting class="me-3"></voting>
+          <voting
+            class="me-3"
+            :net-votes="song.netVotes as number"
+            :current-value="song.userVoteValue as number"
+            :id="song.id"
+            @change-vote="updateVote"
+          ></voting>
           <div class="card flex-grow-1">
             <div class="card-body">
               <div class="card-text">

@@ -10,6 +10,7 @@ import { ArtistsModule } from '../artists/artists.module';
 import { ObjectStorageModule } from '../object-storage/object-storage.module';
 import { UtilsModule } from '../utils/utils.module';
 import { PlaylistSongVote } from './playlist-song-vote';
+import { PlaylistVotingService } from './playlist-voting.service';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { PlaylistSongVote } from './playlist-song-vote';
     ObjectStorageModule,
     UtilsModule,
   ],
-  providers: [PlaylistsService],
+  providers: [PlaylistsService, PlaylistVotingService],
   controllers: [PlaylistsController],
   exports: [PlaylistsService],
 })

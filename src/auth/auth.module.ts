@@ -10,6 +10,7 @@ import { JwtStrategy } from './jwt.strategy';
 import { AdminJwtStrategy } from './admin-jwt.strategy';
 import { AdminJwtAuthGuard } from './admin-jwt-auth.guard';
 import { AdminModule } from '../admin/admin.module';
+import { OptionalJwtAuthGuard } from './optional-jwt-auth.guard';
 
 @Module({
   imports: [UsersModule, AdminModule],
@@ -22,6 +23,7 @@ import { AdminModule } from '../admin/admin.module';
     JwtAuthGuard,
     AdminJwtStrategy,
     AdminJwtAuthGuard,
+    OptionalJwtAuthGuard,
   ],
 })
 export class AuthModule {}

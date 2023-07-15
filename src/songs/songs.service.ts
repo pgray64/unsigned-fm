@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Song } from './song.entity';
@@ -22,6 +26,12 @@ export class SongsService {
   ) {}
   private async save(spotifyTrack: SpotifyTrackDto): Promise<Song> {
     const spotifyTrackId = spotifyTrack.spotifyTrackId;
+    if (!spotifyTrackId) {
+      throw new InternalServerErrorException(
+        spotifyTrack,
+        'Spotify track response has no track ID',
+      );
+    }
     const spotifyArtistsIds = spotifyTrack.artists
       ?.slice(0, this.maxArtistCount)
       ?.map((artist: SpotifyArtistDto) => {
@@ -68,6 +78,9 @@ export class SongsService {
     return await this.songRepository.save(song);
   }
   async getOrCreate(spotifyTrackId: string): Promise<Song> {
+    if (!spotifyTrackId) {
+      throw new BadRequestException();
+    }
     const song = await this.songRepository.findOne({
       where: { spotifyTrackId },
       relations: ['artists'],

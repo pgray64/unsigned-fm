@@ -25,7 +25,7 @@ export class PlaylistsService {
   ) {}
   async getSingle(playlistId: number) {
     if (!playlistId) {
-      return null;
+      throw new BadRequestException();
     }
     return await this.playlistRepository.findOneBy({
       id: playlistId,
@@ -70,7 +70,7 @@ export class PlaylistsService {
     userId: number,
   ) {
     if (!playlistId) {
-      return;
+      throw new BadRequestException();
     }
     const song = await this.songsService.getOrCreate(spotifyTrackId);
     const playlist = await this.playlistRepository.findOneBy({
@@ -117,9 +117,13 @@ export class PlaylistsService {
       },
     });
   }
-  async listPlaylistSongs(playlistId: number, resultCount: number, page = 0) {
+  async listPlaylistSongs(
+    playlistId: number,
+    resultCount: number,
+    page: number,
+  ) {
     if (!playlistId) {
-      return null;
+      throw new BadRequestException();
     }
     return await this.playlistSongRepository.find({
       where: {

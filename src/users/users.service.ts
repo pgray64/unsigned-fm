@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
@@ -14,18 +14,15 @@ export class UsersService {
     @InjectRepository(FederatedCredentials)
     private federatedCredentialsRepository: Repository<FederatedCredentials>,
   ) {}
-  async findOneBy(filter: User): Promise<User | null> {
-    return this.usersRepository.findOneBy(filter);
-  }
   async findOneById(id: number): Promise<User> {
     if (!id) {
-      return null;
+      throw new BadRequestException();
     }
     return this.usersRepository.findOneBy({ id });
   }
   async remove(id: number): Promise<void> {
     if (!id) {
-      return null;
+      throw new BadRequestException();
     }
     await this.usersRepository.softDelete(id);
   }
@@ -34,7 +31,7 @@ export class UsersService {
     provider: AuthProviderEnum,
   ): Promise<User> {
     if (!newUser.email) {
-      return null;
+      throw new BadRequestException();
     }
     const storedCreds = await this.federatedCredentialsRepository.findOneBy({
       provider: provider,

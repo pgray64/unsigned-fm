@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { SpotifyArtistDto } from '../spotify/spotify-artist.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, MoreThan, Repository } from 'typeorm';
@@ -16,6 +16,12 @@ export class ArtistsService {
   ) {}
   async createOrUpdate(spotifyArtist: SpotifyArtistDto): Promise<Artist> {
     const spotifyArtistId = spotifyArtist.spotifyArtistId;
+    if (!spotifyArtistId) {
+      throw new InternalServerErrorException(
+        spotifyArtist,
+        'Spotify artist response has no artist ID',
+      );
+    }
     const currentArtist =
       (await this.artistRepository.findOneBy({
         spotifyArtistId,

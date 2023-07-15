@@ -21,6 +21,8 @@ import { ObjectStorageService } from '../object-storage/object-storage.service';
 import { PlaylistSongResultDto } from './playlist-song-result.dto';
 import { PlaylistSong } from './playlist-song.entity';
 import { Artist } from '../artists/artist.entity';
+import { PlaylistVotingService } from './playlist-voting.service';
+import { OptionalJwtAuthGuard } from '../auth/optional-jwt-auth.guard';
 
 const playlistSongResultCount = 10;
 @Controller('internal/playlists')
@@ -29,6 +31,7 @@ export class PlaylistsController {
     private playlistsService: PlaylistsService,
     private spotifyApiService: SpotifyApiService,
     private objectStorageService: ObjectStorageService,
+    private playlistVotingService: PlaylistVotingService,
   ) {}
 
   @Get('all')
@@ -70,9 +73,11 @@ export class PlaylistsController {
   }
 
   @Get('playlist-songs')
+  @UseGuards(OptionalJwtAuthGuard)
   async getPlaylistSongs(
     @Query('playlistId') playlistId: number,
     @Query('page') page: number,
+    @Req() request: Request,
   ): Promise<PlaylistSongResultDto> {
     if (!playlistId) {
       throw new BadRequestException();
@@ -81,11 +86,21 @@ export class PlaylistsController {
     if (!playlist) {
       throw new NotFoundException(playlistId, 'Playlist not found');
     }
+
     const songs = await this.playlistsService.listPlaylistSongs(
       playlistId,
       playlistSongResultCount,
       page,
     );
+    const userId = (request.user as JwtPayloadDto)?.userId;
+    let votesByPlaylistSongId = {} as Record<number, number>;
+    if (userId && userId > 0) {
+      votesByPlaylistSongId =
+        await this.playlistVotingService.getUserVotesForPlaylistSongs(
+          songs.map((x) => x.id),
+          userId,
+        );
+    }
     return {
       totalCount: playlist.submissionCount,
       perPage: playlistSongResultCount,
@@ -102,7 +117,8 @@ export class PlaylistsController {
       },
       songs: songs.map((s: PlaylistSong) => {
         return {
-          id: s.songId,
+          id: s.id,
+          songId: s.songId,
           name: s.song.name,
           albumImageUrl: this.objectStorageService.getFullObjectUrl(
             s.song.albumImage,
@@ -112,8 +128,27 @@ export class PlaylistsController {
           artists: s.song.artists.map((a: Artist) => {
             return a.name;
           }),
+          netVotes: s.netVotes,
+          userVoteValue: votesByPlaylistSongId[s.id] ?? 0,
         };
       }),
     };
+  }
+  @Post('playlist-song-vote')
+  @UseGuards(JwtAuthGuard)
+  async updatePlaylistSongVote(
+    @Body('playlistSongId') playlistSongId: number,
+    @Body('voteValue') voteValue: number,
+    @Req() request: Request,
+  ) {
+    if (!playlistSongId) {
+      throw new BadRequestException();
+    }
+    const userJwt = request.user as JwtPayloadDto;
+    await this.playlistVotingService.createOrUpdateVote(
+      playlistSongId,
+      userJwt.userId,
+      voteValue,
+    );
   }
 }

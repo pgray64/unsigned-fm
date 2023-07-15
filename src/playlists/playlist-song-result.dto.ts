@@ -6,10 +6,13 @@ export interface PlaylistSongResultDto {
   playlist: PlaylistSearchResultDto;
   songs: {
     id: number;
+    songId: number;
     name: string;
     spotifyTrackId: string;
     spotifyTrackUrl: string;
     albumImageUrl: string;
     artists: string[];
+    netVotes: number;
+    userVoteValue?: number;
   }[];
 }

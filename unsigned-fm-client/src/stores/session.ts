@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { useCookies } from 'vue3-cookies';
-import axios from 'axios';
 import { useApiClient } from '@/composables/api-client/use-api-client';
 
 export const useSession = defineStore('session', () => {
