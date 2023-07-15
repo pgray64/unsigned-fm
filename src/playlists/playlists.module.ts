@@ -9,10 +9,11 @@ import { SongsModule } from '../songs/songs.module';
 import { ArtistsModule } from '../artists/artists.module';
 import { ObjectStorageModule } from '../object-storage/object-storage.module';
 import { UtilsModule } from '../utils/utils.module';
+import { PlaylistSongVote } from './playlist-song-vote';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Playlist, PlaylistSong]),
+    TypeOrmModule.forFeature([Playlist, PlaylistSong, PlaylistSongVote]),
     SpotifyModule,
     SongsModule,
     ArtistsModule,

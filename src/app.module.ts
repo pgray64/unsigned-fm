@@ -20,6 +20,7 @@ import { Playlist } from './playlists/playlist.entity';
 import { PlaylistSong } from './playlists/playlist-song.entity';
 import { ObjectStorageModule } from './object-storage/object-storage.module';
 import { UtilsModule } from './utils/utils.module';
+import { PlaylistSongVote } from './playlists/playlist-song-vote';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { UtilsModule } from './utils/utils.module';
         Artist,
         Playlist,
         PlaylistSong,
+        PlaylistSongVote,
       ],
       synchronize: process.env.UFM_SYNC_DB === '1',
     }),
