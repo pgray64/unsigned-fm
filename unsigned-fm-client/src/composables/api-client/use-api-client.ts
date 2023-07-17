@@ -14,7 +14,10 @@ export function useApiClient() {
       params: data,
     });
   }
-  async function post(route: string, data: any): Promise<AxiosResponse | any> {
+  async function post(
+    route: string,
+    data?: any | undefined,
+  ): Promise<AxiosResponse | any> {
     return await axios.post(route, data, {
       headers: getHeaders(),
     });

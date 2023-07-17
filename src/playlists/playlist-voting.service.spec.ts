@@ -1,9 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PlaylistVotingService } from './playlist-voting.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Playlist } from './playlist.entity';
-import { PlaylistSong } from './playlist-song.entity';
-import { PlaylistSongVote } from './playlist-song-vote';
 import { ModuleMocker } from 'jest-mock';
 describe('PlaylistVotingService', () => {
   const moduleMocker = new ModuleMocker(global);

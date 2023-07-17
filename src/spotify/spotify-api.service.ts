@@ -4,6 +4,7 @@ import { SpotifyTrackDto } from './spotify-track.dto';
 import { SpotifyUserDto } from './spotify-user.dto';
 import { SpotifyPlaylistDto } from './spotify-playlist.dto';
 import { SpotifyArtistDto } from './spotify-artist.dto';
+import { SpotifyPlaylistItemDto } from './spotify-playlist-item.dto';
 
 @Injectable()
 export class SpotifyApiService {
@@ -65,6 +66,40 @@ export class SpotifyApiService {
           ? response.data.images[0].url
           : undefined,
     };
+  }
+
+  async getPlaylistTracks(
+    spotifyPlaylistId: string,
+    limit: number,
+    offset: number,
+  ): Promise<SpotifyPlaylistItemDto[]> {
+    const response = await this.spotifyService.performApiRequest(
+      'playlists/' + spotifyPlaylistId + '/tracks',
+      'GET',
+      undefined,
+      { fields: 'items(track(id))', limit, offset },
+    );
+    return response.data.items
+      ?.filter((item: any) => item.track?.id)
+      .map((item: any) => {
+        return {
+          trackId: item.track?.id,
+        };
+      });
+  }
+  async updatePlaylistTracks(
+    spotifyPlaylistId: string,
+    spotifyTrackIds: string[],
+  ) {
+    const trackUris = spotifyTrackIds.map(
+      (track: string) => `spotify:track:${track}`,
+    );
+    await this.spotifyService.performApiRequest(
+      'playlists/' + spotifyPlaylistId + '/tracks',
+      'PUT',
+      { uris: trackUris },
+      undefined,
+    );
   }
 
   async getArtists(spotifyArtistIds: string[]): Promise<SpotifyArtistDto[]> {

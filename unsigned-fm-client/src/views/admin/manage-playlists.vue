@@ -3,6 +3,7 @@ import LoadingSpinner from '@/components/loading-spinner.vue';
 import { computed, onMounted, ref } from 'vue';
 import { useApiClient } from '@/composables/api-client/use-api-client';
 import ImageThumbnail from '@/components/image-thumbnail.vue';
+import { toast } from 'vue3-toastify';
 
 const apiClient = useApiClient();
 const isLoading = ref(true);
@@ -34,6 +35,7 @@ async function addPlaylist() {
   isLoading.value = true;
   try {
     await apiClient.post('/internal/admin/playlists/save', newPlaylist.value);
+    toast.success('Playlist added!');
   } catch (e) {
     apiClient.displayGenericError(e, 'Failed to add playlist');
   } finally {
@@ -53,6 +55,7 @@ async function updatePlaylist(playlist: any, isRestore: boolean) {
   }
   try {
     await apiClient.post('/internal/admin/playlists/save', playlist);
+    toast.success('Playlist updated!');
   } catch (e) {
     apiClient.displayGenericError(e, 'Failed to update playlist');
   } finally {
@@ -64,11 +67,41 @@ async function removePlaylist(playlistId: number) {
   isLoading.value = true;
   try {
     await apiClient.post('/internal/admin/playlists/remove', { playlistId });
+    toast.success('Playlist removed!');
   } catch (e) {
     apiClient.displayGenericError(e, 'Failed to remove playlist');
   } finally {
     isLoading.value = false;
   }
+  await loadPlaylists();
+}
+
+async function sync(playlistId: number) {
+  isLoading.value = true;
+  try {
+    await apiClient.post('/internal/admin/playlists/refresh-spotify-playlist', {
+      playlistId,
+    });
+    toast.success('Synced the Spotify playlist!');
+  } catch (e) {
+    apiClient.displayGenericError(e, 'Failed to sync Spotify playlist');
+  } finally {
+    isLoading.value = false;
+  }
+
+  await loadPlaylists();
+}
+async function syncAll() {
+  isLoading.value = true;
+  try {
+    await apiClient.post('/internal/admin/playlists/refresh-spotify-playlists');
+    toast.success('Synced all Spotify playlists!');
+  } catch (e) {
+    apiClient.displayGenericError(e, 'Failed to sync Spotify playlists');
+  } finally {
+    isLoading.value = false;
+  }
+
   await loadPlaylists();
 }
 </script>
@@ -78,7 +111,12 @@ async function removePlaylist(playlistId: number) {
     <div class="col-12">
       <h4><router-link to="/admin/home">Admin</router-link></h4>
       <div class="mt-4">
-        <h5>Playlists</h5>
+        <h5>
+          Playlists
+          <button class="ms-2 btn btn-success btn-sm" @click="syncAll">
+            <i class="bi bi-spotify"></i> Sync all
+          </button>
+        </h5>
         <div v-if="isLoading" class="text-center mt-4">
           <loading-spinner></loading-spinner>
         </div>
@@ -164,6 +202,12 @@ async function removePlaylist(playlistId: number) {
                         >
                           <i class="bi bi-cloud-upload"></i>
                           Update
+                        </button>
+                        <button
+                          class="ml-2 btn-sm btn d-inline ms-2 btn-success"
+                          @click="sync(playlist.id)"
+                        >
+                          <i class="bi bi-spotify"></i> Sync
                         </button>
                         <button
                           v-if="playlist.deletedAt"

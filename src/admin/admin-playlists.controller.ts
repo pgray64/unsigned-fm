@@ -5,6 +5,7 @@ import { PlaylistsService } from '../playlists/playlists.service';
 import { PlaylistSearchResultDto } from '../playlists/playlist-search-result.dto';
 import { SpotifyApiService } from '../spotify/spotify-api.service';
 import { ObjectStorageService } from '../object-storage/object-storage.service';
+import { PlaylistRefreshService } from '../playlists/playlist-refresh.service';
 
 @Controller('internal/admin/playlists')
 @UseGuards(AdminJwtAuthGuard)
@@ -13,10 +14,11 @@ export class AdminPlaylistsController {
     private playlistsService: PlaylistsService,
     private spotifyApiService: SpotifyApiService,
     private objectStorageService: ObjectStorageService,
+    private playlistRefreshService: PlaylistRefreshService,
   ) {}
   @Post('save')
   async save(@Body() playlist: Playlist) {
-    await this.playlistsService.save(playlist);
+    await this.playlistsService.createOrUpdate(playlist);
   }
   @Post('remove')
   async remove(@Body('playlistId') playlistId: number) {
@@ -40,5 +42,14 @@ export class AdminPlaylistsController {
         };
       },
     );
+  }
+  @Post('refresh-spotify-playlists')
+  async refreshSpotifyPlaylists() {
+    await this.playlistRefreshService.refreshSpotifyPlaylists();
+  }
+  @Post('refresh-spotify-playlist')
+  async refreshSpotifyPlaylist(@Body('playlistId') playlistId: number) {
+    const playlist = await this.playlistsService.getSingle(playlistId);
+    await this.playlistRefreshService.refreshSpotifyPlaylist(playlist);
   }
 }

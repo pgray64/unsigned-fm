@@ -11,6 +11,7 @@ import { ObjectStorageModule } from '../object-storage/object-storage.module';
 import { UtilsModule } from '../utils/utils.module';
 import { PlaylistSongVote } from './playlist-song-vote';
 import { PlaylistVotingService } from './playlist-voting.service';
+import { PlaylistRefreshService } from './playlist-refresh.service';
 
 @Module({
   imports: [
@@ -21,8 +22,8 @@ import { PlaylistVotingService } from './playlist-voting.service';
     ObjectStorageModule,
     UtilsModule,
   ],
-  providers: [PlaylistsService, PlaylistVotingService],
+  providers: [PlaylistsService, PlaylistVotingService, PlaylistRefreshService],
   controllers: [PlaylistsController],
-  exports: [PlaylistsService],
+  exports: [PlaylistsService, PlaylistRefreshService],
 })
 export class PlaylistsModule {}

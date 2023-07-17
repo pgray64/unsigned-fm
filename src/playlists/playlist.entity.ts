@@ -19,7 +19,7 @@ export class Playlist {
   name: string;
 
   @Column({ nullable: true })
-  playlistImage: string;
+  playlistImage: string | null;
 
   @Column({ default: 0, type: 'double precision' })
   @Index()
@@ -36,4 +36,7 @@ export class Playlist {
 
   @Column({ default: 0 })
   submissionCount: number;
+
+  @Column({ nullable: true })
+  spotifyPlaylistUpdatedAt?: Date | null;
 }

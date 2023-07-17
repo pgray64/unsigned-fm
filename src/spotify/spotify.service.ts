@@ -177,7 +177,7 @@ export class SpotifyService {
   }
   async performApiRequest(
     route: string,
-    method: 'POST' | 'GET',
+    method: 'POST' | 'GET' | 'PUT',
     data?: any,
     params?: any,
     retryOnFailure?: boolean,

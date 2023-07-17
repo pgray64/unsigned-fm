@@ -24,7 +24,7 @@ export class Song {
   name: string;
 
   @Column({ nullable: true })
-  albumImage: string;
+  albumImage: string | null;
 
   @Column()
   spotifyAlbumId: string;

@@ -17,7 +17,7 @@ export class Artist {
   name: string;
 
   @Column({ nullable: true })
-  artistImage: string;
+  artistImage: string | null;
 
   @Column()
   followers: number;

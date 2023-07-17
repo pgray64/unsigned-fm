@@ -43,7 +43,7 @@ export class PlaylistsService {
     await this.playlistRepository.softDelete({ id: playlistId });
   }
 
-  async save(playlist: Playlist) {
+  async createOrUpdate(playlist: Playlist) {
     const spotifyData = await this.spotifyApiService.getPlaylist(
       playlist.spotifyPlaylistId,
     );
