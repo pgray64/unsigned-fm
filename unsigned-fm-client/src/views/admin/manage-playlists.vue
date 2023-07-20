@@ -109,7 +109,9 @@ async function syncAll() {
 <template>
   <div class="row">
     <div class="col-12">
-      <h4><router-link to="/admin/home">Admin</router-link></h4>
+      <h4>
+        <router-link to="/admin/home">Admin</router-link>
+      </h4>
       <div class="mt-4">
         <h5>
           Playlists

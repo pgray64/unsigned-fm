@@ -32,7 +32,9 @@ async function updateSpotifyTokenFromCode() {
 <template>
   <div class="row">
     <div class="col-12 col-lg-6">
-      <h4><router-link to="/admin/home">Admin</router-link></h4>
+      <h4>
+        <router-link to="/admin/home">Admin</router-link>
+      </h4>
       <div class="mt-4">
         <h5>Updating Spotify Token</h5>
         <div v-if="isLoading" class="text-center">
