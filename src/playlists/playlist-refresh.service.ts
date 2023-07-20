@@ -8,13 +8,14 @@ import { Playlist } from './playlist.entity';
 import { PlaylistSong } from './playlist-song.entity';
 import { SpotifyApiService } from '../spotify/spotify-api.service';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, LessThan, Repository } from 'typeorm';
+import { In, LessThan, MoreThanOrEqual, Repository } from 'typeorm';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PlaylistRefreshLog } from './playlist-refresh-log.entity';
 import { subHours } from 'date-fns';
 import { PlaylistRefreshStatus } from './playlist-refresh-status.enum';
 
 const maxTracksInSpotifyPlaylist = 30;
+const minNetVotesForSpotifyPlaylist = 2;
 
 @Injectable()
 export class PlaylistRefreshService {
@@ -23,6 +24,8 @@ export class PlaylistRefreshService {
     private spotifyApiService: SpotifyApiService,
     @InjectRepository(Playlist)
     private playlistRepository: Repository<Playlist>,
+    @InjectRepository(PlaylistSong)
+    private playlistSongRepository: Repository<PlaylistSong>,
     @InjectRepository(PlaylistRefreshLog)
     private playlistRefreshLogRepository: Repository<PlaylistRefreshLog>,
   ) {}
@@ -73,11 +76,15 @@ export class PlaylistRefreshService {
         'Playlist ID is required',
       );
     }
-    const playlistSongs = await this.playlistService.listPlaylistSongs(
-      playlist.id,
-      maxTracksInSpotifyPlaylist,
-      0,
-    );
+    const playlistSongs = await this.playlistSongRepository.find({
+      order: { hotScore: 'desc' },
+      take: maxTracksInSpotifyPlaylist,
+      relations: ['song'],
+      where: {
+        playlistId: playlist.id,
+        netVotes: MoreThanOrEqual(minNetVotesForSpotifyPlaylist),
+      },
+    });
     const dbTrackIds = playlistSongs.map(
       (playlistSong: PlaylistSong) => playlistSong.song.spotifyTrackId,
     );

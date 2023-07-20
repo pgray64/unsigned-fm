@@ -13,6 +13,8 @@ import { Song } from '../songs/song.entity';
 import { User } from '../users/user.entity';
 
 @Entity()
+@Index(['hotScore', 'playlistId'])
+@Index(['createdAt', 'userId'])
 export class PlaylistSong {
   @PrimaryGeneratedColumn()
   id: number;
@@ -42,7 +44,6 @@ export class PlaylistSong {
   userId: number;
 
   @Column({ default: 0, type: 'double precision' })
-  @Index()
   hotScore: number;
 
   @Column({ default: 0 })
