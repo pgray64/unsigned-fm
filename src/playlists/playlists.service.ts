@@ -5,14 +5,15 @@ import { Playlist } from './playlist.entity';
 import { SpotifyApiService } from '../spotify/spotify-api.service';
 import { SongsService } from '../songs/songs.service';
 import { PlaylistSong } from './playlist-song.entity';
-import { subDays } from 'date-fns';
+import { subDays, subHours } from 'date-fns';
 import { ObjectStorageService } from '../object-storage/object-storage.service';
 import { RankingService } from '../utils/ranking.service';
 
+const maxFollowersForRestrictedPlaylists = 1000;
+const daysBetweenDuplicatePlaylistSubmissions = 30;
+const maxDailySubmissionsPerUser = 2;
 @Injectable()
 export class PlaylistsService {
-  private readonly maxFollowersForRestrictedPlaylists = 1000;
-  private readonly daysBetweenDuplicatePlaylistSubmissions = 30;
   constructor(
     @InjectRepository(Playlist)
     private playlistRepository: Repository<Playlist>,
@@ -69,8 +70,14 @@ export class PlaylistsService {
     playlistId: number,
     userId: number,
   ) {
-    if (!playlistId) {
+    if (!playlistId || !userId) {
       throw new BadRequestException();
+    }
+    if (!(await this.canUserSubmit(userId))) {
+      throw new BadRequestException(
+        spotifyTrackId,
+        'You can only submit two songs per day',
+      );
     }
     const song = await this.songsService.getOrCreate(spotifyTrackId);
     const playlist = await this.playlistRepository.findOneBy({
@@ -81,7 +88,7 @@ export class PlaylistsService {
     }
     if (
       playlist.isRestricted &&
-      song.artists[0].followers > this.maxFollowersForRestrictedPlaylists
+      song.artists[0].followers > maxFollowersForRestrictedPlaylists
     ) {
       throw new BadRequestException(
         spotifyTrackId,
@@ -112,7 +119,7 @@ export class PlaylistsService {
         playlistId,
         songId,
         createdAt: MoreThan(
-          subDays(new Date(), this.daysBetweenDuplicatePlaylistSubmissions),
+          subDays(new Date(), daysBetweenDuplicatePlaylistSubmissions),
         ),
       },
     });
@@ -134,5 +141,19 @@ export class PlaylistsService {
       take: resultCount,
       skip: resultCount * page,
     });
+  }
+  async canUserSubmit(userId: number): Promise<boolean> {
+    if (!userId) {
+      return false;
+    }
+    const oneDayAgo = subHours(new Date(), 24);
+    return (
+      (await this.playlistSongRepository.count({
+        where: {
+          createdAt: MoreThan(oneDayAgo),
+          userId,
+        },
+      })) < maxDailySubmissionsPerUser
+    );
   }
 }

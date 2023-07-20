@@ -8,7 +8,7 @@ import { Playlist } from './playlist.entity';
 import { PlaylistSong } from './playlist-song.entity';
 import { SpotifyApiService } from '../spotify/spotify-api.service';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, LessThan, MoreThanOrEqual, Repository } from 'typeorm';
+import { In, MoreThan, MoreThanOrEqual, Repository } from 'typeorm';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PlaylistRefreshLog } from './playlist-refresh-log.entity';
 import { subHours } from 'date-fns';
@@ -36,7 +36,7 @@ export class PlaylistRefreshService {
     if (
       await this.playlistRefreshLogRepository.exist({
         where: {
-          createdAt: LessThan(oneHourAgo),
+          createdAt: MoreThan(oneHourAgo),
           status: In([
             PlaylistRefreshStatus.Pending,
             PlaylistRefreshStatus.Success,
