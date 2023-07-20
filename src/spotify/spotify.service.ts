@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as querystring from 'querystring';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -57,6 +57,9 @@ export class SpotifyService {
     code: string,
     isRefreshToken: boolean,
   ): Promise<string | null> {
+    if (!code) {
+      throw new BadRequestException(undefined, 'code is required');
+    }
     let payload = null as any;
     if (isRefreshToken) {
       payload = { grant_type: 'refresh_token', refresh_token: code };

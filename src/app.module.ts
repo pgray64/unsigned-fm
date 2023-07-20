@@ -20,7 +20,9 @@ import { Playlist } from './playlists/playlist.entity';
 import { PlaylistSong } from './playlists/playlist-song.entity';
 import { ObjectStorageModule } from './object-storage/object-storage.module';
 import { UtilsModule } from './utils/utils.module';
-import { PlaylistSongVote } from './playlists/playlist-song-vote';
+import { PlaylistSongVote } from './playlists/playlist-song-vote.entity';
+import { ScheduleModule } from '@nestjs/schedule';
+import { PlaylistRefreshLog } from './playlists/playlist-refresh-log.entity';
 
 @Module({
   imports: [
@@ -44,6 +46,7 @@ import { PlaylistSongVote } from './playlists/playlist-song-vote';
         Playlist,
         PlaylistSong,
         PlaylistSongVote,
+        PlaylistRefreshLog,
       ],
       synchronize: process.env.UFM_SYNC_DB === '1',
     }),
@@ -52,6 +55,7 @@ import { PlaylistSongVote } from './playlists/playlist-song-vote';
       isGlobal: true,
       cache: true,
     }),
+    ScheduleModule.forRoot(),
     AuthModule,
     UsersModule,
     AdminModule,

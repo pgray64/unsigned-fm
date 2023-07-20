@@ -6,7 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { PlaylistSong } from './playlist-song.entity';
 import { In, Repository } from 'typeorm';
-import { PlaylistSongVote } from './playlist-song-vote';
+import { PlaylistSongVote } from './playlist-song-vote.entity';
 import { RankingService } from '../utils/ranking.service';
 
 @Injectable()
