@@ -13,6 +13,7 @@ import { PlaylistSongVote } from './playlist-song-vote.entity';
 import { PlaylistVotingService } from './playlist-voting.service';
 import { PlaylistRefreshService } from './playlist-refresh.service';
 import { PlaylistRefreshLog } from './playlist-refresh-log.entity';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { PlaylistRefreshLog } from './playlist-refresh-log.entity';
     ArtistsModule,
     ObjectStorageModule,
     UtilsModule,
+    UsersModule,
   ],
   providers: [PlaylistsService, PlaylistVotingService, PlaylistRefreshService],
   controllers: [PlaylistsController],

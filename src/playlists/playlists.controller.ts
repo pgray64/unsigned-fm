@@ -102,7 +102,7 @@ export class PlaylistsController {
         );
     }
     return {
-      totalCount: playlist.submissionCount,
+      totalCount: playlist.submissionCount, // use stored value to prevent expensive sql count op
       perPage: playlistSongResultCount,
       playlist: {
         id: playlist.id,

@@ -7,6 +7,7 @@ import AdminHome from '../views/admin/admin-home.vue';
 import ManagePlaylists from '../views/admin/manage-playlists.vue';
 import UpdateSpotifyToken from '@/views/admin/update-spotify-token.vue';
 import PlaylistView from '../views/playlist.vue';
+import AdminUsers from '../views/admin/users.vue';
 
 import { useSession } from '@/stores/session';
 
@@ -61,6 +62,11 @@ const router = createRouter({
       path: '/admin/spotify/update-token',
       name: 'adminUpdateSpotifyToken',
       component: UpdateSpotifyToken,
+    },
+    {
+      path: '/admin/users',
+      name: 'adminUsers',
+      component: AdminUsers,
     },
     // default redirect to home page
     { path: '/:pathMatch(.*)*', redirect: '/' },

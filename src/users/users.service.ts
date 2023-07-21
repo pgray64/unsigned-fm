@@ -1,10 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { FederatedCredentials } from './federated-credentials.entity';
 import { AuthProviderEnum } from './auth-provider.enum';
 import { UserAuthDataDto } from '../auth/user-auth-data.dto';
+import { UserSearchResultDto } from './user-search-result.dto';
 
 @Injectable()
 export class UsersService {
@@ -58,5 +59,44 @@ export class UsersService {
       });
       return user;
     }
+  }
+
+  async searchUsers(
+    username: string,
+    resultCount: number,
+    page: number,
+  ): Promise<UserSearchResultDto> {
+    const result = await this.usersRepository.findAndCount({
+      where: {
+        username: ILike(`%${username}%`), // this is safe from sql injection
+      },
+      take: resultCount,
+      skip: resultCount * page,
+      order: { username: 'asc' },
+    });
+    return {
+      users: result[0].map((user: User) => {
+        return {
+          id: user.id,
+          isBanned: user.isBanned,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          username: user.username,
+        };
+      }),
+      totalCount: result[1],
+      perPage: resultCount,
+    };
+  }
+  async setUserBanStatus(userId: number, isBanned: boolean) {
+    if (!userId) {
+      throw new BadRequestException(undefined, 'User ID is required');
+    }
+    await this.usersRepository.update(
+      { id: userId },
+      {
+        isBanned,
+      },
+    );
   }
 }

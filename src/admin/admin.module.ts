@@ -7,6 +7,7 @@ import { SpotifyModule } from '../spotify/spotify.module';
 import { AdminPlaylistsController } from './admin-playlists.controller';
 import { PlaylistsModule } from '../playlists/playlists.module';
 import { ObjectStorageModule } from '../object-storage/object-storage.module';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { ObjectStorageModule } from '../object-storage/object-storage.module';
     SpotifyModule,
     PlaylistsModule,
     ObjectStorageModule,
+    UsersModule,
   ],
   controllers: [AdminController, AdminPlaylistsController],
   providers: [AdminService],

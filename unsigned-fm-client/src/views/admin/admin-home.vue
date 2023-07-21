@@ -43,7 +43,10 @@ async function authorizeWithSpotify() {
     <div class="col-12 col-lg-6">
       <h4>Admin</h4>
       <div class="mt-3">
-        <router-link to="/admin/playlists/manage">Playlists</router-link>
+        <router-link to="/admin/playlists/manage" class="me-2"
+          >Playlists</router-link
+        >
+        <router-link to="/admin/users">Users</router-link>
       </div>
       <div class="mt-4">
         <h5>Spotify API User</h5>

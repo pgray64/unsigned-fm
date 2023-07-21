@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AdminJwtAuthGuard } from '../auth/admin-jwt-auth.guard';
 import { Playlist } from '../playlists/playlist.entity';
 import { PlaylistsService } from '../playlists/playlists.service';
@@ -6,6 +14,8 @@ import { PlaylistSearchResultDto } from '../playlists/playlist-search-result.dto
 import { SpotifyApiService } from '../spotify/spotify-api.service';
 import { ObjectStorageService } from '../object-storage/object-storage.service';
 import { PlaylistRefreshService } from '../playlists/playlist-refresh.service';
+
+const playlistSongResultCount = 10;
 
 @Controller('internal/admin/playlists')
 @UseGuards(AdminJwtAuthGuard)
@@ -51,5 +61,16 @@ export class AdminPlaylistsController {
   async refreshSpotifyPlaylist(@Body('playlistId') playlistId: number) {
     const playlist = await this.playlistsService.getSingle(playlistId);
     await this.playlistRefreshService.refreshSpotifyPlaylist(playlist);
+  }
+  @Get('playlist-songs-by-user')
+  async ListPlaylistSongsForUser(
+    @Query('userId') userId: number,
+    @Query('page') page: number,
+  ) {
+    return await this.playlistsService.listPlaylistSongsForUser(
+      userId,
+      playlistSongResultCount,
+      page,
+    );
   }
 }

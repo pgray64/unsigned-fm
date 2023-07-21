@@ -23,6 +23,7 @@ import { UtilsModule } from './utils/utils.module';
 import { PlaylistSongVote } from './playlists/playlist-song-vote.entity';
 import { ScheduleModule } from '@nestjs/schedule';
 import { PlaylistRefreshLog } from './playlists/playlist-refresh-log.entity';
+import { AdminUsersController } from './admin/admin-users.controller';
 
 @Module({
   imports: [
@@ -66,7 +67,7 @@ import { PlaylistRefreshLog } from './playlists/playlist-refresh-log.entity';
     ObjectStorageModule,
     UtilsModule,
   ],
-  controllers: [],
+  controllers: [AdminUsersController],
   providers: [],
 })
 export class AppModule {}

@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThan, Repository } from 'typeorm';
 import { Playlist } from './playlist.entity';
@@ -8,6 +13,7 @@ import { PlaylistSong } from './playlist-song.entity';
 import { subDays, subHours } from 'date-fns';
 import { ObjectStorageService } from '../object-storage/object-storage.service';
 import { RankingService } from '../utils/ranking.service';
+import { UsersService } from '../users/users.service';
 
 const maxFollowersForRestrictedPlaylists = 1000;
 const daysBetweenDuplicatePlaylistSubmissions = 30;
@@ -23,6 +29,7 @@ export class PlaylistsService {
     private playlistSongRepository: Repository<PlaylistSong>,
     private objectStorageService: ObjectStorageService,
     private rankingService: RankingService,
+    private usersService: UsersService,
   ) {}
   async getSingle(playlistId: number) {
     if (!playlistId) {
@@ -73,12 +80,8 @@ export class PlaylistsService {
     if (!playlistId || !userId) {
       throw new BadRequestException();
     }
-    if (!(await this.canUserSubmit(userId))) {
-      throw new BadRequestException(
-        spotifyTrackId,
-        'You can only submit two songs per day',
-      );
-    }
+    await this.throwIfUserCannotSubmit(userId);
+
     const song = await this.songsService.getOrCreate(spotifyTrackId);
     const playlist = await this.playlistRepository.findOneBy({
       id: playlistId,
@@ -142,18 +145,51 @@ export class PlaylistsService {
       skip: resultCount * page,
     });
   }
-  async canUserSubmit(userId: number): Promise<boolean> {
+  async throwIfUserCannotSubmit(userId: number) {
     if (!userId) {
-      return false;
+      throw new BadRequestException(userId, 'User ID is invalid');
+    }
+    const user = await this.usersService.findOneById(userId);
+    if (!user) {
+      throw new BadRequestException(userId, 'User is invalid');
+    }
+    if (user.isBanned) {
+      throw new ForbiddenException(
+        userId,
+        'Your account is banned from submitting',
+      );
     }
     const oneDayAgo = subHours(new Date(), 24);
-    return (
+    if (
       (await this.playlistSongRepository.count({
         where: {
           createdAt: MoreThan(oneDayAgo),
           userId,
         },
-      })) < maxDailySubmissionsPerUser
-    );
+      })) > maxDailySubmissionsPerUser
+    ) {
+      throw new BadRequestException(
+        userId,
+        'You can only submit two songs per day',
+      );
+    }
+  }
+  async listPlaylistSongsForUser(
+    userId: number,
+    resultCount: number,
+    page: number,
+  ) {
+    if (!userId) {
+      throw new BadRequestException();
+    }
+    return await this.playlistSongRepository.find({
+      where: {
+        userId,
+      },
+      order: { hotScore: 'desc' },
+      relations: ['song', 'song.artists'],
+      take: resultCount,
+      skip: resultCount * page,
+    });
   }
 }
