@@ -65,7 +65,7 @@ async function updateUser(user: any) {
       <div class="mt-4">
         <h5>Users</h5>
         <form class="form" @submit.prevent="loadUsers">
-          <div class="input-group input-group-sm" style="max-width: 500px">
+          <div class="input-group input-group" style="max-width: 500px">
             <input class="form-control" type="text" v-model="username" />
             <button type="submit" class="btn btn-success">Search</button>
           </div>
@@ -77,40 +77,28 @@ async function updateUser(user: any) {
           <div class="row">
             <div class="col-12">
               <div>
-                <ul class="list-group" v-if="users.length > 0">
-                  <li
-                    class="list-group-item d-flex"
-                    v-for="user of users"
-                    v-bind:key="user.id"
-                  >
-                    <div class="flex-grow-1">
-                      <div class="mb-2">
-                        <b> {{ user.username }}</b>
-                      </div>
-                      <div class="form-check form-switch">
-                        <input
-                          v-model="user.isBanned"
-                          class="form-check-input"
-                          type="checkbox"
-                          role="switch"
-                          :id="`user-${user.id}-is-banned`"
-                        />
-                        <label
-                          for="`user-${user.id}-is-banned`"
-                          class="form-label"
-                          >Is Banned</label
-                        >
-                      </div>
-                      <button
-                        class="btn btn-sm btn-primary d-inline"
-                        @click="updateUser(user)"
-                      >
-                        <i class="bi bi-cloud-upload"></i>
-                        Update
-                      </button>
-                    </div>
-                  </li>
-                </ul>
+                <table class="table" v-if="users.length > 0">
+                  <thead>
+                    <tr>
+                      <th>Username</th>
+                      <th>Name</th>
+                      <th>Banned</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="" v-for="user of users" v-bind:key="user.id">
+                      <td>
+                        <router-link :to="'/admin/users/details/' + user.id">
+                          {{ user.username }}
+                        </router-link>
+                      </td>
+                      <td>{{ user.firstName }} {{ user.lastName }}</td>
+                      <td class="p-2">
+                        Banned: <span>{{ user.isBanned ? 'Y' : 'N' }}</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
                 <p v-else><em>No users found</em></p>
               </div>
             </div>

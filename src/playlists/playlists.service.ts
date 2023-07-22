@@ -2,7 +2,6 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
-  Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThan, Repository } from 'typeorm';
@@ -14,6 +13,8 @@ import { subDays, subHours } from 'date-fns';
 import { ObjectStorageService } from '../object-storage/object-storage.service';
 import { RankingService } from '../utils/ranking.service';
 import { UsersService } from '../users/users.service';
+import { PlaylistSongResultDto } from './playlist-song-result.dto';
+import { Artist } from '../artists/artist.entity';
 
 const maxFollowersForRestrictedPlaylists = 1000;
 const daysBetweenDuplicatePlaylistSubmissions = 30;
@@ -178,18 +179,39 @@ export class PlaylistsService {
     userId: number,
     resultCount: number,
     page: number,
-  ) {
+  ): Promise<PlaylistSongResultDto> {
     if (!userId) {
       throw new BadRequestException();
     }
-    return await this.playlistSongRepository.find({
-      where: {
-        userId,
-      },
-      order: { hotScore: 'desc' },
-      relations: ['song', 'song.artists'],
-      take: resultCount,
-      skip: resultCount * page,
-    });
+    const [playlistSongs, totalCount] =
+      await this.playlistSongRepository.findAndCount({
+        where: {
+          userId,
+        },
+        order: { hotScore: 'desc' },
+        relations: ['song', 'song.artists'],
+        take: resultCount,
+        skip: resultCount * page,
+      });
+    return {
+      totalCount,
+      perPage: resultCount,
+      songs: playlistSongs.map((s: any) => {
+        return {
+          id: s.id,
+          songId: s.songId,
+          name: s.song.name,
+          albumImageUrl: this.objectStorageService.getFullObjectUrl(
+            s.song.albumImage,
+          ),
+          spotifyTrackId: s.song.spotifyTrackId,
+          spotifyTrackUrl: `${this.spotifyApiService.spotifyWebTrackUrl}/${s.song.spotifyTrackId}`,
+          artists: s.song.artists.map((a: Artist) => {
+            return a.name;
+          }),
+          netVotes: s.netVotes,
+        };
+      }),
+    };
   }
 }

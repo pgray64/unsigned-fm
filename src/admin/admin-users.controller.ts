@@ -18,6 +18,10 @@ export class AdminUsersController {
       page,
     );
   }
+  @Get()
+  async getUser(@Query('id') id: number) {
+    return await this.usersService.findOneById(id);
+  }
   @Post('set-ban-status')
   async SetBanStatus(
     @Body('userId') userId: number,

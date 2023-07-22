@@ -3,7 +3,7 @@ import { PlaylistSearchResultDto } from './playlist-search-result.dto';
 export interface PlaylistSongResultDto {
   totalCount: number;
   perPage: number;
-  playlist: PlaylistSearchResultDto;
+  playlist?: PlaylistSearchResultDto;
   songs: {
     id: number;
     songId: number;

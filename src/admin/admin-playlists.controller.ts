@@ -14,6 +14,7 @@ import { PlaylistSearchResultDto } from '../playlists/playlist-search-result.dto
 import { SpotifyApiService } from '../spotify/spotify-api.service';
 import { ObjectStorageService } from '../object-storage/object-storage.service';
 import { PlaylistRefreshService } from '../playlists/playlist-refresh.service';
+import { PlaylistSongResultDto } from '../playlists/playlist-song-result.dto';
 
 const playlistSongResultCount = 10;
 
@@ -66,7 +67,7 @@ export class AdminPlaylistsController {
   async ListPlaylistSongsForUser(
     @Query('userId') userId: number,
     @Query('page') page: number,
-  ) {
+  ): Promise<PlaylistSongResultDto> {
     return await this.playlistsService.listPlaylistSongsForUser(
       userId,
       playlistSongResultCount,

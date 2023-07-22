@@ -17,12 +17,12 @@ const perPage = ref(0);
 const route = useRoute();
 
 onMounted(async () => {
-  await loadPlaylists();
+  await loadPlaylistSongs();
 });
 
 const playlistId = computed(() => {
   return parseInt(
-    typeof route.params.playlistId == 'string'
+    typeof route.params.playlistId === 'string'
       ? route.params.playlistId
       : route.params.playlistId[0],
   );
@@ -32,10 +32,10 @@ function getArtistNames(artists: string[]) {
 }
 async function handlePageChange(newPage: number) {
   page.value = newPage;
-  await loadPlaylists();
+  await loadPlaylistSongs();
 }
 
-async function loadPlaylists() {
+async function loadPlaylistSongs() {
   let result: any;
   isLoading.value = true;
   try {
