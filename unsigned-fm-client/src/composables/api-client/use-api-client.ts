@@ -12,6 +12,7 @@ export function useApiClient() {
     return await axios.get(route, {
       headers: getHeaders(),
       params: data,
+      responseType: 'json',
     });
   }
   async function post(
@@ -20,6 +21,7 @@ export function useApiClient() {
   ): Promise<AxiosResponse | any> {
     return await axios.post(route, data, {
       headers: getHeaders(),
+      responseType: 'json',
     });
   }
   function displayApiError(e: any, errMessage?: string) {

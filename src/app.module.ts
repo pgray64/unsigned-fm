@@ -29,6 +29,7 @@ import { AdminUsersController } from './admin/admin-users.controller';
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'unsigned-fm-client/dist'),
+      exclude: ['/internal/(.*)'],
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',

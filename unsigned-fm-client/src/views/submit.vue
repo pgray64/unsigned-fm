@@ -50,15 +50,17 @@ async function handleSubmit() {
       trackId: selectedTrack.value,
       playlistId: selectedPlaylistId.value,
     });
-    toast.success('Song added to playlist!');
+
     selectedTrack.value = '';
     selectedPlaylistId.value = '';
-    if (result.id) {
+    const insertedId = result?.data?.id;
+    if (insertedId) {
       await apiClient.post('/internal/playlists/playlist-song-vote', {
-        playlistSongId: result.id,
+        playlistSongId: insertedId,
         voteValue: 1,
       });
     }
+    toast.success('Song added to playlist!');
   } catch (e: any) {
     apiClient.displayGenericError(e, 'Song could not be added');
   } finally {

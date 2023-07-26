@@ -23,6 +23,8 @@ import { PlaylistSong } from './playlist-song.entity';
 import { Artist } from '../artists/artist.entity';
 import { PlaylistVotingService } from './playlist-voting.service';
 import { OptionalJwtAuthGuard } from '../auth/optional-jwt-auth.guard';
+import { PlaylistSongRecDto } from './playlist-song-rec.dto';
+import { PlaylistRecommendationsService } from './playlist-recommendations.service';
 
 const playlistSongResultCount = 10;
 @Controller('internal/playlists')
@@ -32,6 +34,7 @@ export class PlaylistsController {
     private spotifyApiService: SpotifyApiService,
     private objectStorageService: ObjectStorageService,
     private playlistVotingService: PlaylistVotingService,
+    private playlistRecommendationsService: PlaylistRecommendationsService,
   ) {}
 
   @Get('all')
@@ -153,6 +156,15 @@ export class PlaylistsController {
       playlistSongId,
       userJwt.userId,
       voteValue,
+    );
+  }
+
+  @Get('song-recs')
+  @UseGuards(JwtAuthGuard)
+  async GetSongRecomendations(@Req() request: Request) {
+    const userJwt = request.user as JwtPayloadDto;
+    return await this.playlistRecommendationsService.getRecommendations(
+      userJwt.userId,
     );
   }
 }

@@ -14,6 +14,8 @@ import { PlaylistVotingService } from './playlist-voting.service';
 import { PlaylistRefreshService } from './playlist-refresh.service';
 import { PlaylistRefreshLog } from './playlist-refresh-log.entity';
 import { UsersModule } from '../users/users.module';
+import { PlaylistRecommendationsService } from './playlist-recommendations.service';
+import { AdminModule } from '../admin/admin.module';
 
 @Module({
   imports: [
@@ -30,7 +32,12 @@ import { UsersModule } from '../users/users.module';
     UtilsModule,
     UsersModule,
   ],
-  providers: [PlaylistsService, PlaylistVotingService, PlaylistRefreshService],
+  providers: [
+    PlaylistsService,
+    PlaylistVotingService,
+    PlaylistRefreshService,
+    PlaylistRecommendationsService,
+  ],
   controllers: [PlaylistsController],
   exports: [PlaylistsService, PlaylistRefreshService, PlaylistVotingService],
 })

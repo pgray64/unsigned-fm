@@ -53,6 +53,11 @@ const isAdmin = computed(() => {
             >
           </li>
           <li class="nav-item">
+            <router-link class="nav-link me-lg-2" to="/for-you"
+              ><i class="bi bi-music-note-beamed"></i> For You</router-link
+            >
+          </li>
+          <li class="nav-item">
             <router-link class="nav-link me-lg-2" to="/submit"
               ><i class="bi bi-plus-square me-1"></i> Submit</router-link
             >

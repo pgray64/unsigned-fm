@@ -9,6 +9,7 @@ import UpdateSpotifyToken from '@/views/admin/update-spotify-token.vue';
 import PlaylistView from '../views/playlist.vue';
 import AdminUsers from '../views/admin/users.vue';
 import UserDetails from '@/views/admin/user-details.vue';
+import SongRecommendations from '@/views/song-recommendations.vue';
 import { useSession } from '@/stores/session';
 
 const router = createRouter({
@@ -30,6 +31,11 @@ const router = createRouter({
       name: 'playlists',
       component: PlaylistsView,
     },
+    {
+      path: '/playlist/:playlistId',
+      name: 'playlist',
+      component: PlaylistView,
+    },
     // Routes that required being logged in
     {
       path: '/settings',
@@ -42,9 +48,9 @@ const router = createRouter({
       component: SubmitView,
     },
     {
-      path: '/playlist/:playlistId',
-      name: 'playlist',
-      component: PlaylistView,
+      path: '/for-you',
+      name: 'songRecommendations',
+      component: SongRecommendations,
     },
     // Admin routes
     {
