@@ -94,7 +94,12 @@ async function updateUser(user: any) {
                       </td>
                       <td>{{ user.firstName }} {{ user.lastName }}</td>
                       <td class="p-2">
-                        Banned: <span>{{ user.isBanned ? 'Y' : 'N' }}</span>
+                        <span
+                          :class="[
+                            user.isBanned ? 'text-danger' : 'text-success',
+                          ]"
+                          >{{ user.isBanned ? 'Yes' : 'No' }}</span
+                        >
                       </td>
                     </tr>
                   </tbody>

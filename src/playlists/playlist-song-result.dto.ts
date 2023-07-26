@@ -14,5 +14,6 @@ export interface PlaylistSongResultDto {
     artists: string[];
     netVotes: number;
     userVoteValue?: number;
+    playlist?: PlaylistSearchResultDto;
   }[];
 }

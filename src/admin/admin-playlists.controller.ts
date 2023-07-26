@@ -15,6 +15,7 @@ import { SpotifyApiService } from '../spotify/spotify-api.service';
 import { ObjectStorageService } from '../object-storage/object-storage.service';
 import { PlaylistRefreshService } from '../playlists/playlist-refresh.service';
 import { PlaylistSongResultDto } from '../playlists/playlist-song-result.dto';
+import { PlaylistVotingService } from '../playlists/playlist-voting.service';
 
 const playlistSongResultCount = 10;
 
@@ -26,6 +27,7 @@ export class AdminPlaylistsController {
     private spotifyApiService: SpotifyApiService,
     private objectStorageService: ObjectStorageService,
     private playlistRefreshService: PlaylistRefreshService,
+    private playlistVotingService: PlaylistVotingService,
   ) {}
   @Post('save')
   async save(@Body() playlist: Playlist) {
@@ -64,7 +66,7 @@ export class AdminPlaylistsController {
     await this.playlistRefreshService.refreshSpotifyPlaylist(playlist);
   }
   @Get('playlist-songs-by-user')
-  async ListPlaylistSongsForUser(
+  async listPlaylistSongsForUser(
     @Query('userId') userId: number,
     @Query('page') page: number,
   ): Promise<PlaylistSongResultDto> {
@@ -73,5 +75,10 @@ export class AdminPlaylistsController {
       playlistSongResultCount,
       page,
     );
+  }
+  @Post('delete-playlist-song')
+  async deletePlaylistSong(@Body('playlistSongId') playlistSongId: number) {
+    await this.playlistVotingService.deletePlaylistSongVotes(playlistSongId);
+    await this.playlistsService.deletePlaylistSong(playlistSongId);
   }
 }

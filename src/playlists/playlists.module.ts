@@ -32,6 +32,6 @@ import { UsersModule } from '../users/users.module';
   ],
   providers: [PlaylistsService, PlaylistVotingService, PlaylistRefreshService],
   controllers: [PlaylistsController],
-  exports: [PlaylistsService, PlaylistRefreshService],
+  exports: [PlaylistsService, PlaylistRefreshService, PlaylistVotingService],
 })
 export class PlaylistsModule {}

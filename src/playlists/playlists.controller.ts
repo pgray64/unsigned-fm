@@ -65,11 +65,12 @@ export class PlaylistsController {
     }
     const userJwt = request.user as JwtPayloadDto;
 
-    await this.playlistsService.addSongToPlaylist(
+    const addedPlaylistSong = await this.playlistsService.addSongToPlaylist(
       trackId,
       playlistId,
       userJwt.userId,
     );
+    return { id: addedPlaylistSong.id };
   }
 
   @Get('playlist-songs')
@@ -86,13 +87,14 @@ export class PlaylistsController {
     if (!playlist) {
       throw new NotFoundException(playlistId, 'Playlist not found');
     }
-
+    const userId = (request.user as JwtPayloadDto)?.userId;
     const songs = await this.playlistsService.listPlaylistSongs(
       playlistId,
       playlistSongResultCount,
       page,
+      userId && userId > 0,
     );
-    const userId = (request.user as JwtPayloadDto)?.userId;
+
     let votesByPlaylistSongId = {} as Record<number, number>;
     if (userId && userId > 0) {
       votesByPlaylistSongId =
@@ -130,6 +132,8 @@ export class PlaylistsController {
           }),
           netVotes: s.netVotes,
           userVoteValue: votesByPlaylistSongId[s.id] ?? 0,
+          username: s.user?.username,
+          userId: s.user?.id,
         };
       }),
     };

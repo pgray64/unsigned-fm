@@ -36,14 +36,29 @@ async function loadPlaylists() {
 }
 async function handleSubmit() {
   isLoading.value = true;
+  let trackId = selectedTrack.value ?? '';
+  if (trackId.indexOf('?') > 0) {
+    trackId = trackId.split('?')[0];
+  }
+  if (trackId.indexOf('/') > 0) {
+    const split = trackId.split('/');
+    trackId = split[split.length - 1];
+  }
+  selectedTrack.value = trackId;
   try {
-    await apiClient.post('/internal/playlists/add-song', {
+    const result = await apiClient.post('/internal/playlists/add-song', {
       trackId: selectedTrack.value,
       playlistId: selectedPlaylistId.value,
     });
     toast.success('Song added to playlist!');
     selectedTrack.value = '';
     selectedPlaylistId.value = '';
+    if (result.id) {
+      await apiClient.post('/internal/playlists/playlist-song-vote', {
+        playlistSongId: result.id,
+        voteValue: 1,
+      });
+    }
   } catch (e: any) {
     apiClient.displayGenericError(e, 'Song could not be added');
   } finally {
@@ -83,7 +98,7 @@ async function handleSubmit() {
             class="alert alert-info mt-3"
             v-if="isSelectedPlaylistRestricted"
           >
-            Selected playlist is restricted to artists with fewer than 1,000
+            Selected playlist is restricted to artists with fewer than 10,000
             followers
           </div>
         </div>

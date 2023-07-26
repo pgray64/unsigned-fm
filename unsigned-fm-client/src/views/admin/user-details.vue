@@ -6,7 +6,6 @@ import ImageThumbnail from '@/components/image-thumbnail.vue';
 import { toast } from 'vue3-toastify';
 import Pagination from '@/components/pagination.vue';
 import { useRoute } from 'vue-router';
-import Voting from '@/components/voting.vue';
 
 const apiClient = useApiClient();
 const isLoadingUser = ref(true);
@@ -63,7 +62,6 @@ async function loadPlaylistSongs() {
     isLoadingPlaylistSongs.value = false;
   }
 }
-
 async function handlePageChange(newPage: number) {
   page.value = newPage;
   await loadPlaylistSongs();
@@ -87,6 +85,24 @@ async function updateUser() {
     isLoadingUser.value = false;
   }
 }
+async function deletePlaylistSong(playlistSongId: number) {
+  if (!confirm('Are you sure you want to remove this playlist song?')) {
+    return;
+  }
+  isLoadingPlaylistSongs.value = true;
+  try {
+    await apiClient.post('/internal/admin/playlists/delete-playlist-song', {
+      playlistSongId,
+    });
+    toast.success('Song removed from playlist');
+    page.value = 0;
+    await loadPlaylistSongs();
+  } catch (e) {
+    apiClient.displayGenericError(e, 'Failed remove song from playlist');
+  } finally {
+    isLoadingPlaylistSongs.value = false;
+  }
+}
 </script>
 
 <template>
@@ -96,7 +112,7 @@ async function updateUser() {
         <router-link to="/admin/home">Admin</router-link>
       </h4>
       <div class="mt-4">
-        <h5>{{ user.username }}</h5>
+        <h5>{{ user?.username }}</h5>
         <div v-if="isLoadingUser" class="text-center mt-4">
           <loading-spinner></loading-spinner>
         </div>
@@ -133,7 +149,7 @@ async function updateUser() {
             </div>
             <div
               v-else-if="playlistSongs.length > 0"
-              class="mt-5 row d-lg-block"
+              class="mt-4 row d-lg-block"
             >
               <div
                 class="col-12 col-lg-6 mb-3 d-flex align-items-center"
@@ -158,16 +174,33 @@ async function updateUser() {
                             <div class="small">
                               {{ getArtistNames(song.artists) }}
                             </div>
+                            <div class="small">
+                              Playlist:
+                              <router-link
+                                :to="`/playlist/${song.playlist.id}`"
+                                >{{ song.playlist.name }}</router-link
+                              >
+                            </div>
                           </div>
                         </div>
-                        <div>
+                        <div class="d-flex align-items-start flex-column">
                           <a
                             class="btn btn-outline-success btn-sm d-inline-block h-auto align-items-center"
                             :href="song.spotifyTrackUrl"
                             target="_blank"
                           >
-                            <span> <i class="bi bi-spotify"></i> Spotify </span>
-                          </a>
+                            <span>
+                              <i class="bi bi-spotify"></i> Spotify
+                            </span></a
+                          >
+
+                          <button
+                            class="mt-2 btn btn-outline-danger btn-sm d-inline-block h-auto align-items-center"
+                            type="button"
+                            @click="deletePlaylistSong(song.id)"
+                          >
+                            <span> <i class="bi bi-trash"></i> Delete </span>
+                          </button>
                         </div>
                       </div>
                     </div>

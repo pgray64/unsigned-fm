@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThan, Repository } from 'typeorm';
@@ -16,7 +17,7 @@ import { UsersService } from '../users/users.service';
 import { PlaylistSongResultDto } from './playlist-song-result.dto';
 import { Artist } from '../artists/artist.entity';
 
-const maxFollowersForRestrictedPlaylists = 1000;
+const maxFollowersForRestrictedPlaylists = 10000;
 const daysBetweenDuplicatePlaylistSubmissions = 30;
 const maxDailySubmissionsPerUser = 2;
 @Injectable()
@@ -77,7 +78,7 @@ export class PlaylistsService {
     spotifyTrackId: string,
     playlistId: number,
     userId: number,
-  ) {
+  ): Promise<PlaylistSong> {
     if (!playlistId || !userId) {
       throw new BadRequestException();
     }
@@ -96,7 +97,7 @@ export class PlaylistsService {
     ) {
       throw new BadRequestException(
         spotifyTrackId,
-        'This playlist is for artists with less than 1,000 followers',
+        'This playlist is for artists with less than 10,000 followers',
       );
     }
     if (await this.isSongDuplicatedInPlaylist(song.id, playlistId)) {
@@ -105,7 +106,7 @@ export class PlaylistsService {
         'Wait 30 days to resubmit the same song to the same playlist',
       );
     }
-    await this.playlistSongRepository.insert({
+    const insertedPlaylistSong = await this.playlistSongRepository.save({
       songId: song.id,
       playlistId,
       userId,
@@ -116,6 +117,7 @@ export class PlaylistsService {
       'submissionCount',
       1,
     );
+    return insertedPlaylistSong;
   }
   async isSongDuplicatedInPlaylist(songId: number, playlistId: number) {
     return await this.playlistSongRepository.exist({
@@ -132,6 +134,7 @@ export class PlaylistsService {
     playlistId: number,
     resultCount: number,
     page: number,
+    includeUser: boolean,
   ) {
     if (!playlistId) {
       throw new BadRequestException();
@@ -141,7 +144,7 @@ export class PlaylistsService {
         playlistId,
       },
       order: { hotScore: 'desc' },
-      relations: ['song', 'song.artists'],
+      relations: ['song', 'song.artists', ...(includeUser ? ['user'] : [])],
       take: resultCount,
       skip: resultCount * page,
     });
@@ -189,14 +192,14 @@ export class PlaylistsService {
           userId,
         },
         order: { hotScore: 'desc' },
-        relations: ['song', 'song.artists'],
+        relations: ['song', 'playlist', 'song.artists'],
         take: resultCount,
         skip: resultCount * page,
       });
     return {
       totalCount,
       perPage: resultCount,
-      songs: playlistSongs.map((s: any) => {
+      songs: playlistSongs.map((s: PlaylistSong) => {
         return {
           id: s.id,
           songId: s.songId,
@@ -210,8 +213,43 @@ export class PlaylistsService {
             return a.name;
           }),
           netVotes: s.netVotes,
+          playlist: {
+            id: s.playlist.id,
+            name: s.playlist.name,
+            isRestricted: s.playlist.isRestricted,
+            spotifyPlaylistId: s.playlist.spotifyPlaylistId,
+            spotifyPlaylistUrl: `${this.spotifyApiService.spotifyWebPlaylistUrl}/${s.playlist.spotifyPlaylistId}`,
+            submissionCount: s.playlist.submissionCount,
+            playlistImageUrl: this.objectStorageService.getFullObjectUrl(
+              s.playlist.playlistImage,
+            ),
+          },
         };
       }),
     };
+  }
+  async deletePlaylistSong(playlistSongId: number) {
+    if (!playlistSongId) {
+      throw new BadRequestException(
+        playlistSongId,
+        'Playlist song ID must be specified',
+      );
+    }
+    const playlistSong = await this.playlistSongRepository.findOneBy({
+      id: playlistSongId,
+    });
+    const playlistId = playlistSong?.playlistId;
+    if (!playlistId) {
+      throw new NotFoundException(
+        playlistSongId,
+        'Playlist song entry does not exist',
+      );
+    }
+    await this.playlistSongRepository.delete({ id: playlistSongId });
+    await this.playlistRepository.decrement(
+      { id: playlistId },
+      'submissionCount',
+      1,
+    );
   }
 }

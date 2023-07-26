@@ -6,6 +6,8 @@ import ImageThumbnail from '@/components/image-thumbnail.vue';
 import { useRoute } from 'vue-router';
 import Pagination from '@/components/pagination.vue';
 import Voting from '@/components/voting.vue';
+import { useSession } from '@/stores/session';
+import { toast } from 'vue3-toastify';
 
 const isLoading = ref(false);
 const apiClient = useApiClient();
@@ -15,11 +17,15 @@ const page = ref(0);
 const totalCount = ref(0);
 const perPage = ref(0);
 const route = useRoute();
+const session = useSession();
 
 onMounted(async () => {
   await loadPlaylistSongs();
 });
 
+const isAdmin = computed(() => {
+  return session.isAdmin;
+});
 const playlistId = computed(() => {
   return parseInt(
     typeof route.params.playlistId === 'string'
@@ -70,6 +76,24 @@ async function updateVote(
     }
   } catch (e) {
     apiClient.displayGenericError(e, 'Failed to update vote');
+  }
+}
+async function deletePlaylistSong(playlistSongId: number) {
+  if (!confirm('Are you sure you want to remove this playlist song?')) {
+    return;
+  }
+  isLoading.value = true;
+  try {
+    await apiClient.post('/internal/admin/playlists/delete-playlist-song', {
+      playlistSongId,
+    });
+    toast.success('Song removed from playlist');
+    page.value = 0;
+    await loadPlaylistSongs();
+  } catch (e) {
+    apiClient.displayGenericError(e, 'Failed remove song from playlist');
+  } finally {
+    isLoading.value = false;
   }
 }
 </script>
@@ -132,9 +156,15 @@ async function updateVote(
                       <div class="small">
                         {{ getArtistNames(song.artists) }}
                       </div>
+                      <div class="small" v-if="isAdmin">
+                        <router-link
+                          :to="`/admin/users/details/${song.userId}`"
+                          >{{ song.username }}</router-link
+                        >
+                      </div>
                     </div>
                   </div>
-                  <div>
+                  <div class="d-flex flex-column align-items-start">
                     <a
                       class="btn btn-outline-success btn-sm d-inline-block h-auto align-items-center"
                       :href="song.spotifyTrackUrl"
@@ -142,6 +172,14 @@ async function updateVote(
                     >
                       <span> <i class="bi bi-spotify"></i> Spotify </span>
                     </a>
+                    <button
+                      v-if="isAdmin"
+                      class="mt-2 btn btn-outline-danger btn-sm d-inline-block h-auto align-items-center"
+                      type="button"
+                      @click="deletePlaylistSong(song.id)"
+                    >
+                      <span> <i class="bi bi-trash"></i> Delete </span>
+                    </button>
                   </div>
                 </div>
               </div>

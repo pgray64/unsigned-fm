@@ -106,4 +106,13 @@ export class PlaylistVotingService {
     }
     return result;
   }
+  async deletePlaylistSongVotes(playlistSongId: number) {
+    if (!playlistSongId) {
+      throw new BadRequestException(
+        playlistSongId,
+        'PlaylistSongId must be specified',
+      );
+    }
+    await this.playlistSongVoteRepository.delete({ playlistSongId });
+  }
 }
