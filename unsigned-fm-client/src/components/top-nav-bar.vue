@@ -19,7 +19,7 @@ const isAdmin = computed(() => {
 </script>
 
 <template>
-  <nav class="navbar navbar-expand-md">
+  <nav class="navbar navbar-expand-md bg-white">
     <div class="container">
       <router-link class="navbar-brand" to="/"
         ><img

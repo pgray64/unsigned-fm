@@ -9,11 +9,10 @@ import { JwtAuthGuard } from './jwt-auth.guard';
 import { JwtStrategy } from './jwt.strategy';
 import { AdminJwtStrategy } from './admin-jwt.strategy';
 import { AdminJwtAuthGuard } from './admin-jwt-auth.guard';
-import { AdminModule } from '../admin/admin.module';
 import { OptionalJwtAuthGuard } from './optional-jwt-auth.guard';
 
 @Module({
-  imports: [UsersModule, AdminModule],
+  imports: [UsersModule],
   controllers: [CsrfController, AuthController],
   providers: [
     AuthService,

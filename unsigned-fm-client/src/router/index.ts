@@ -11,6 +11,9 @@ import AdminUsers from '../views/admin/users.vue';
 import UserDetails from '@/views/admin/user-details.vue';
 import SongRecommendations from '@/views/song-recommendations.vue';
 import { useSession } from '@/stores/session';
+import TermsOfService from '@/views/terms-of-service.vue';
+import PrivacyPolicy from '@/views/privacy-policy.vue';
+import AccountError from '@/views/account-error.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -36,6 +39,17 @@ const router = createRouter({
       name: 'playlist',
       component: PlaylistView,
     },
+    {
+      path: '/terms',
+      name: 'termsOfService',
+      component: TermsOfService,
+    },
+    {
+      path: '/privacy-policy',
+      name: 'privacyPolicy',
+      component: PrivacyPolicy,
+    },
+    { path: '/account-error', name: 'accountError', component: AccountError },
     // Routes that required being logged in
     {
       path: '/settings',
@@ -84,10 +98,15 @@ const router = createRouter({
   ],
 });
 
-const publicPageNames = ['home', 'login', 'playlists', 'playlist'] as (
-  | string
-  | symbol
-)[];
+const publicPageNames = [
+  'home',
+  'login',
+  'playlists',
+  'playlist',
+  'terms',
+  'privacyPolicy',
+  'accountError',
+] as (string | symbol)[];
 router.beforeEach(async (to) => {
   const session = useSession();
   await session.loadSession();

@@ -26,6 +26,9 @@ export class AuthController {
       req.user as UserAuthDataDto,
       AuthProviderEnum.Google,
     );
+    if (!jwt) {
+      response.redirect('/account-error');
+    }
     // Need http-only for front-end requests
     response.cookie(authConstants.authCookieName, jwt.access_token, {
       httpOnly: false,

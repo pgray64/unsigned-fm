@@ -4,14 +4,14 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtPayloadDto } from './jwt-payload.dto';
 import { ConfigService } from '@nestjs/config';
 import authConstants from './auth.constants';
-import { AdminService } from '../admin/admin.service';
+import { AdminUserService } from '../users/admin-user.service';
 import { Request } from 'express';
 
 @Injectable()
 export class AdminJwtStrategy extends PassportStrategy(Strategy, 'admin-jwt') {
   constructor(
     private configService: ConfigService,
-    private adminService: AdminService,
+    private adminService: AdminUserService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

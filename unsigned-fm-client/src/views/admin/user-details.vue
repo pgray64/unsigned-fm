@@ -33,7 +33,7 @@ async function loadUser() {
   isLoadingUser.value = true;
   let result = null as any;
   try {
-    result = await apiClient.get('/internal/admin/users/', {
+    result = await apiClient.get('/internal/admin/users', {
       id: userId.value,
     });
   } catch (e) {
@@ -103,6 +103,24 @@ async function deletePlaylistSong(playlistSongId: number) {
     isLoadingPlaylistSongs.value = false;
   }
 }
+async function deleteUser() {
+  if (!confirm('Are you sure you want to delete this user?')) {
+    return;
+  }
+  isLoadingUser.value = true;
+  try {
+    await apiClient.post('/internal/admin/playlists/delete-user', {
+      userId,
+    });
+    toast.success('User deleted');
+    page.value = 0;
+    await loadPlaylistSongs();
+  } catch (e) {
+    apiClient.displayGenericError(e, 'Failed delete user');
+  } finally {
+    isLoadingUser.value = false;
+  }
+}
 </script>
 
 <template>
@@ -122,6 +140,12 @@ async function deletePlaylistSong(playlistSongId: number) {
             <b>Name: </b> {{ user.firstName }} {{ user.lastName }}
           </div>
           <div class="mt-1">
+            <b>Is Deleted: </b>
+            <span :class="[user.deletedAt ? 'text-danger' : 'text-success']">{{
+              user.deletedAt ? 'Yes' : 'No'
+            }}</span>
+          </div>
+          <div class="mt-1">
             <label for="user-is-banned" class="form-label me-1"
               ><b>Is Banned: </b></label
             >
@@ -132,15 +156,17 @@ async function deletePlaylistSong(playlistSongId: number) {
                 type="checkbox"
                 role="switch"
                 id="user-is-banned"
+                @change="updateUser"
               />
             </span>
           </div>
 
-          <div class="mt-2">
-            <button class="btn btn-sm btn-primary" @click="updateUser()">
-              Save
+          <div v-if="!user.deletedAt">
+            <button class="btn btn-danger" @click="deleteUser">
+              Delete user
             </button>
           </div>
+
           <hr />
           <div class="mt-4">
             <h5>Song Submissions</h5>

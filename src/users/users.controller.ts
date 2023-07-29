@@ -28,4 +28,9 @@ export class UsersController {
       username: user.username,
     };
   }
+  @Post('delete-account')
+  async deleteAccount(@Req() request: Request) {
+    const userJwt = request.user as JwtPayloadDto;
+    await this.usersService.deleteAccount(userJwt.userId);
+  }
 }

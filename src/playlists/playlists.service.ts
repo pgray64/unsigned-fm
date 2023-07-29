@@ -16,6 +16,7 @@ import { RankingService } from '../utils/ranking.service';
 import { UsersService } from '../users/users.service';
 import { PlaylistSongResultDto } from './playlist-song-result.dto';
 import { Artist } from '../artists/artist.entity';
+import { AdminUserService } from '../users/admin-user.service';
 
 const maxFollowersForRestrictedPlaylists = 10000;
 const daysBetweenDuplicatePlaylistSubmissions = 30;
@@ -32,6 +33,7 @@ export class PlaylistsService {
     private objectStorageService: ObjectStorageService,
     private rankingService: RankingService,
     private usersService: UsersService,
+    private adminUserService: AdminUserService,
   ) {}
   async getSingle(playlistId: number) {
     if (!playlistId) {
@@ -163,6 +165,11 @@ export class PlaylistsService {
         'Your account is banned from submitting',
       );
     }
+    // Only rate limit non admins
+    const isAdmin = await this.adminUserService.isUserAnAdmin(userId);
+    if (isAdmin) {
+      return;
+    }
     const oneDayAgo = subHours(new Date(), 24);
     if (
       (await this.playlistSongRepository.count({
@@ -170,7 +177,7 @@ export class PlaylistsService {
           createdAt: MoreThan(oneDayAgo),
           userId,
         },
-      })) > maxDailySubmissionsPerUser
+      })) >= maxDailySubmissionsPerUser
     ) {
       throw new BadRequestException(
         userId,

@@ -15,11 +15,11 @@ export class UsersService {
     @InjectRepository(FederatedCredentials)
     private federatedCredentialsRepository: Repository<FederatedCredentials>,
   ) {}
-  async findOneById(id: number): Promise<User> {
+  async findOneById(id: number, withDeleted = false): Promise<User> {
     if (!id) {
       throw new BadRequestException();
     }
-    return this.usersRepository.findOneBy({ id });
+    return this.usersRepository.findOne({ where: { id }, withDeleted });
   }
   async remove(id: number): Promise<void> {
     if (!id) {
@@ -39,14 +39,18 @@ export class UsersService {
       subject: newUser.email,
     });
     if (storedCreds) {
-      const updatedUser = await this.usersRepository.save({
-        id: storedCreds.userId,
-        username: newUser.email,
-        firstName: newUser.firstName,
-        lastName: newUser.lastName,
-      });
-      return updatedUser;
+      // user exists
+      await this.usersRepository.update(
+        { id: storedCreds.userId },
+        {
+          username: newUser.email,
+          firstName: newUser.firstName,
+          lastName: newUser.lastName,
+        },
+      );
+      return await this.findOneById(storedCreds.userId, true);
     } else {
+      // creating a new user
       const user = await this.usersRepository.save({
         username: newUser.email,
         firstName: newUser.firstName,
@@ -73,6 +77,7 @@ export class UsersService {
       take: resultCount,
       skip: resultCount * page,
       order: { username: 'asc' },
+      withDeleted: true,
     });
     return {
       users: result[0].map((user: User) => {
@@ -82,6 +87,7 @@ export class UsersService {
           firstName: user.firstName,
           lastName: user.lastName,
           username: user.username,
+          deletedAt: user.deletedAt,
         };
       }),
       totalCount: result[1],
@@ -98,5 +104,11 @@ export class UsersService {
         isBanned,
       },
     );
+  }
+  async deleteAccount(userId: number) {
+    if (!userId) {
+      throw new BadRequestException(undefined, 'User ID is required');
+    }
+    await this.usersRepository.softDelete({ id: userId });
   }
 }

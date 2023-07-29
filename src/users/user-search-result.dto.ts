@@ -7,5 +7,6 @@ export interface UserSearchResultDto {
     firstName: string;
     lastName: string;
     isBanned: boolean;
+    deletedAt: Date;
   }[];
 }

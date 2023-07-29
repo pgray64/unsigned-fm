@@ -83,6 +83,7 @@ async function updateUser(user: any) {
                       <th>Username</th>
                       <th>Name</th>
                       <th>Banned</th>
+                      <th>Deleted</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -93,12 +94,20 @@ async function updateUser(user: any) {
                         </router-link>
                       </td>
                       <td>{{ user.firstName }} {{ user.lastName }}</td>
-                      <td class="p-2">
+                      <td>
                         <span
                           :class="[
                             user.isBanned ? 'text-danger' : 'text-success',
                           ]"
                           >{{ user.isBanned ? 'Yes' : 'No' }}</span
+                        >
+                      </td>
+                      <td>
+                        <span
+                          :class="[
+                            user.deletedAt ? 'text-danger' : 'text-success',
+                          ]"
+                          >{{ user.deletedAt ? 'Yes' : 'No' }}</span
                         >
                       </td>
                     </tr>

@@ -1,11 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { UserAuthDataDto } from './user-auth-data.dto';
 import { UsersService } from '../users/users.service';
 import { AuthProviderEnum } from '../users/auth-provider.enum';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { JwtPayloadDto } from './jwt-payload.dto';
-import { AdminService } from '../admin/admin.service';
+import { AdminUserService } from '../users/admin-user.service';
 
 @Injectable()
 export class AuthService {
@@ -14,13 +18,16 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private configService: ConfigService,
-    private adminService: AdminService,
+    private adminService: AdminUserService,
   ) {
     this.jwtSecret = this.configService.getOrThrow<string>('JWT_SECRET');
   }
 
   async logInUser(authData: UserAuthDataDto, provider: AuthProviderEnum) {
     const user = await this.usersService.createOrUpdateUser(authData, provider);
+    if (user.isBanned || user.deletedAt) {
+      return null;
+    }
     // This is not what is actually used for protecting admin routes, just for UI.
     // admin-jwt-strategy checks the DB every time
     const isAdmin = await this.adminService.isUserAnAdmin(user.id);

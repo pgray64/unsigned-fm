@@ -2,10 +2,12 @@
 import { onMounted, ref } from 'vue';
 import { useApiClient } from '@/composables/api-client/use-api-client';
 import LoadingSpinner from '@/components/loading-spinner.vue';
+import { useSession } from '@/stores/session';
 
 const apiClient = useApiClient();
 const userInfo = ref(null as any);
 const isLoading = ref(true);
+const session = useSession();
 onMounted(async () => {
   await loadUserInfo();
 });
@@ -18,6 +20,28 @@ async function loadUserInfo() {
     apiClient.displayGenericError(e, 'Failed to load user data');
   }
   userInfo.value = userResponse.data;
+  isLoading.value = false;
+}
+const logOut = function () {
+  session.logOut();
+  window.location.href = '/';
+};
+async function deleteAccount() {
+  if (
+    !confirm(
+      "Are you sure you want to delete your account? This can't be undone.",
+    )
+  ) {
+    return;
+  }
+  isLoading.value = true;
+  try {
+    await apiClient.post('/internal/users/delete-account');
+    logOut();
+  } catch (e) {
+    apiClient.displayGenericError(e, 'Failed to delete account');
+  }
+
   isLoading.value = false;
 }
 </script>
@@ -43,6 +67,14 @@ async function loadUserInfo() {
           <div>{{ userInfo.lastName }}</div>
         </li>
       </ul>
+      <div class="mt-3">
+        <button class="btn btn-danger me-2" @click="deleteAccount()">
+          Delete account
+        </button>
+        <button class="btn btn-outline-secondary" @click="logOut()">
+          Log out
+        </button>
+      </div>
     </div>
   </div>
 </template>

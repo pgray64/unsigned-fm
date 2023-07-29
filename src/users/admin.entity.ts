@@ -6,7 +6,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User } from '../users/user.entity';
+import { User } from './user.entity';
 
 @Entity()
 export class Admin {

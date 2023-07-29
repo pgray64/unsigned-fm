@@ -7,7 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { User } from './users/user.entity';
 import { FederatedCredentials } from './users/federated-credentials.entity';
-import { Admin } from './admin/admin.entity';
+import { Admin } from './users/admin.entity';
 import { AdminModule } from './admin/admin.module';
 import { SpotifyModule } from './spotify/spotify.module';
 import { SpotifyAccessToken } from './spotify/spotify-access-token.entity';
