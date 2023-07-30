@@ -45,7 +45,7 @@ export class PlaylistsService {
   }
   async getAll(withDeleted: boolean): Promise<Playlist[]> {
     const playlists = await this.playlistRepository.find({
-      order: { hotScore: 'desc' },
+      order: { name: 'asc' },
       withDeleted,
     });
     return playlists;
