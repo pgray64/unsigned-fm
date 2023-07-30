@@ -148,7 +148,7 @@ async function deletePlaylistSong(playlistSongId: number) {
                       :size-px="75"
                     ></image-thumbnail>
                   </div>
-                  <div class="flex-grow-1 ps-2">
+                  <div class="flex-grow-1 ps-2 overflow-auto">
                     <div>
                       <div>
                         <b>{{ song.name }}</b>
