@@ -38,6 +38,7 @@ import { AdminUsersController } from './admin/admin-users.controller';
       username: process.env.UFM_PG_USER, // These are only loaded from OS env variables, not env files
       password: process.env.UFM_PG_PASS,
       database: process.env.UFM_PG_DB,
+      ssl: process.env.UFM_PG_SSL === '1',
       entities: [
         User,
         FederatedCredentials,
