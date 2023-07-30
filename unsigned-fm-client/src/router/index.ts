@@ -103,7 +103,7 @@ const publicPageNames = [
   'login',
   'playlists',
   'playlist',
-  'terms',
+  'termsOfService',
   'privacyPolicy',
   'accountError',
 ] as (string | symbol)[];
