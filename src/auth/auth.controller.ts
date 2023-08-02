@@ -5,7 +5,9 @@ import { UserAuthDataDto } from './user-auth-data.dto';
 import { AuthProviderEnum } from '../users/auth-provider.enum';
 import { Request, Response } from 'express';
 import authConstants from './auth.constants';
+import { addDays } from 'date-fns';
 
+const authCookieDurationDays = 14;
 @Controller('internal/auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -32,6 +34,7 @@ export class AuthController {
     // Need http-only for front-end requests
     response.cookie(authConstants.authCookieName, jwt.access_token, {
       httpOnly: false,
+      expires: addDays(new Date(), authCookieDurationDays),
     });
     response.redirect('/');
   }
