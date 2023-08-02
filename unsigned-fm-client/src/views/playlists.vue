@@ -32,6 +32,19 @@ async function loadPlaylists() {
   </div>
   <div v-else class="row justify-content-center">
     <div class="col-12">
+      <div class="row mb-3">
+        <div class="col-12">
+          <div class="alert alert-success">
+            <div class="alert-heading"><b>How does it work?</b></div>
+            <div>
+              <router-link to="/submit">Submit</router-link> your favorite songs
+              by artists with under 10K followers. Vote on songs that you like.
+              The most popular submissions are used to automatically update our
+              Spotify playlists!
+            </div>
+          </div>
+        </div>
+      </div>
       <h4>Playlists</h4>
       <div class="mt-4 row">
         <div
