@@ -77,7 +77,7 @@ async function loadPlaylists() {
                             undefined,
                             {
                               notation: 'compact',
-                              maximumFractionDigits: 2,
+                              maximumFractionDigits: 1,
                             },
                           )
                         }}

@@ -67,6 +67,7 @@ async function updateUser(user: any) {
           Users ({{
             (totalCount as number).toLocaleString(undefined, {
               notation: 'compact',
+              maximumFractionDigits: 1,
             })
           }})
         </h5>
