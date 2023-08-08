@@ -29,7 +29,8 @@ export class PlaylistRefreshService {
     @InjectRepository(PlaylistRefreshLog)
     private playlistRefreshLogRepository: Repository<PlaylistRefreshLog>,
   ) {}
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  // @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  // Disabling auto-update as it is not reliable - possibly due to rate limits
   async handleSpotifyRefreshCron() {
     // Ensure job only runs once even if multiple node processes
     const oneHourAgo = subHours(new Date(), 1);

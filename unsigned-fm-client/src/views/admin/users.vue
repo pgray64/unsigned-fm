@@ -63,7 +63,13 @@ async function updateUser(user: any) {
         <router-link to="/admin/home">Admin</router-link>
       </h4>
       <div class="mt-4">
-        <h5>Users</h5>
+        <h5>
+          Users ({{
+            (totalCount as number).toLocaleString(undefined, {
+              notation: 'compact',
+            })
+          }})
+        </h5>
         <form class="form" @submit.prevent="loadUsers">
           <div class="input-group input-group" style="max-width: 500px">
             <input class="form-control" type="text" v-model="username" />
