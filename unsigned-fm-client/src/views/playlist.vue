@@ -16,6 +16,7 @@ const playlist = ref({} as any);
 const page = ref(0);
 const totalCount = ref(0);
 const perPage = ref(0);
+const sortNew = ref(false);
 const route = useRoute();
 const session = useSession();
 
@@ -41,6 +42,12 @@ async function handlePageChange(newPage: number) {
   await loadPlaylistSongs();
 }
 
+async function changeSort(isSortNew: boolean) {
+  sortNew.value = isSortNew;
+  page.value = 0;
+  await loadPlaylistSongs();
+}
+
 async function loadPlaylistSongs() {
   let result: any;
   isLoading.value = true;
@@ -48,6 +55,7 @@ async function loadPlaylistSongs() {
     result = await apiClient.get('/internal/playlists/playlist-songs', {
       page: page.value,
       playlistId: playlistId.value,
+      sortNew: sortNew.value ? sortNew.value : undefined,
     });
     songs.value = result.data.songs;
     playlist.value = result.data.playlist;
@@ -126,6 +134,33 @@ async function deletePlaylistSong(playlistSongId: number) {
       </div>
 
       <div class="mt-5 row d-lg-block">
+        <div class="col-12" role="navigation">
+          <ul class="nav nav-pills mb-3" id="pills-tab">
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link"
+                :class="[sortNew ? '' : 'active']"
+                id="pills-home-tab"
+                type="button"
+                role="tab"
+                @click="changeSort(false)"
+              >
+                Trending
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link"
+                :class="[sortNew ? 'active' : '']"
+                type="button"
+                role="tab"
+                @click="changeSort(true)"
+              >
+                New
+              </button>
+            </li>
+          </ul>
+        </div>
         <div
           class="col-12 col-lg-6 mb-3 d-flex align-items-center"
           v-for="song of songs"

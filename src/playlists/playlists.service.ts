@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MoreThan, Repository } from 'typeorm';
+import { FindOptionsOrder, MoreThan, Repository } from 'typeorm';
 import { Playlist } from './playlist.entity';
 import { SpotifyApiService } from '../spotify/spotify-api.service';
 import { SongsService } from '../songs/songs.service';
@@ -137,15 +137,19 @@ export class PlaylistsService {
     resultCount: number,
     page: number,
     includeUser: boolean,
+    sortNew: boolean,
   ) {
     if (!playlistId) {
       throw new BadRequestException();
     }
+    const orderBy = (
+      sortNew ? { id: 'desc' } : { hotScore: 'desc' }
+    ) as FindOptionsOrder<PlaylistSong>;
     return await this.playlistSongRepository.find({
       where: {
         playlistId,
       },
-      order: { hotScore: 'desc' },
+      order: orderBy,
       relations: ['song', 'song.artists', ...(includeUser ? ['user'] : [])],
       take: resultCount,
       skip: resultCount * page,

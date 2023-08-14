@@ -81,6 +81,7 @@ export class PlaylistsController {
   async getPlaylistSongs(
     @Query('playlistId') playlistId: number,
     @Query('page') page: number,
+    @Query('sortNew') sortNew: boolean,
     @Req() request: Request,
   ): Promise<PlaylistSongResultDto> {
     if (!playlistId) {
@@ -96,6 +97,7 @@ export class PlaylistsController {
       playlistSongResultCount,
       page,
       userId && userId > 0,
+      sortNew,
     );
 
     let votesByPlaylistSongId = {} as Record<number, number>;
