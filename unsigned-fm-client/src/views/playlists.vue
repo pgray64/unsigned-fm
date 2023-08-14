@@ -37,10 +37,9 @@ async function loadPlaylists() {
           <div class="alert alert-success">
             <div class="alert-heading"><b>How does it work?</b></div>
             <div>
-              <router-link to="/submit">Submit</router-link> your favorite songs
-              by artists with under 10K followers. Vote on songs that you like.
-              The most popular submissions are used to automatically update our
-              Spotify playlists!
+              <router-link to="/submit">Submit</router-link> your own songs or
+              your favorite songs by new artists. The most popular submissions
+              are used to automatically update our Spotify playlists!
             </div>
           </div>
         </div>

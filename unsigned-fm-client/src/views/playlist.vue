@@ -134,7 +134,7 @@ async function deletePlaylistSong(playlistSongId: number) {
       </div>
 
       <div class="mt-5 row d-lg-block">
-        <div class="col-12" role="navigation">
+        <div class="col-12" role="navigation" v-if="songs.length > 0">
           <ul class="nav nav-pills mb-3" id="pills-tab">
             <li class="nav-item" role="presentation">
               <button
@@ -160,6 +160,16 @@ async function deletePlaylistSong(playlistSongId: number) {
               </button>
             </li>
           </ul>
+        </div>
+        <div v-else class="col-12 col-lg-6">
+          <div class="alert alert-info">
+            <div class="alert-heading"><b>This playlist has no songs!</b></div>
+            <div>
+              <router-link to="/submit">Submit</router-link> your own songs or
+              your favorite songs by new artists. The most popular submissions
+              are used to automatically update our Spotify playlists!
+            </div>
+          </div>
         </div>
         <div
           class="col-12 col-lg-6 mb-3 d-flex align-items-center"
