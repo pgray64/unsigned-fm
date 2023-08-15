@@ -35,24 +35,14 @@ async function loadUsers() {
   isLoading.value = false;
 }
 
-async function handlePageChange(newPage: number) {
-  page.value = newPage;
+async function searchUsers() {
+  page.value = 0;
   await loadUsers();
 }
 
-async function updateUser(user: any) {
-  isLoading.value = true;
-  try {
-    await apiClient.post('/internal/admin/users/set-ban-status', {
-      userId: user.id,
-      isBanned: user.isBanned,
-    });
-    toast.success('User ban status updated');
-  } catch (e) {
-    apiClient.displayGenericError(e, 'Failed set ban status');
-  } finally {
-    isLoading.value = false;
-  }
+async function handlePageChange(newPage: number) {
+  page.value = newPage;
+  await loadUsers();
 }
 </script>
 
@@ -71,7 +61,7 @@ async function updateUser(user: any) {
             })
           }})
         </h5>
-        <form class="form" @submit.prevent="loadUsers">
+        <form class="form" @submit.prevent="searchUsers">
           <div class="input-group input-group" style="max-width: 500px">
             <input class="form-control" type="text" v-model="username" />
             <button type="submit" class="btn btn-success">Search</button>
