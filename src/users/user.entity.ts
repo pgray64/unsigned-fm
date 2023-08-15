@@ -14,11 +14,11 @@ export class User {
   @Column({ unique: true })
   username: string;
 
-  @Column()
-  firstName: string;
+  @Column({ nullable: true })
+  firstName?: string;
 
-  @Column()
-  lastName: string;
+  @Column({ nullable: true })
+  lastName?: string;
 
   @DeleteDateColumn()
   deletedAt?: Date;
