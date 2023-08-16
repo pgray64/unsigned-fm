@@ -8,10 +8,10 @@ import { Playlist } from './playlist.entity';
 import { PlaylistSong } from './playlist-song.entity';
 import { SpotifyApiService } from '../spotify/spotify-api.service';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, MoreThan, MoreThanOrEqual, Repository } from 'typeorm';
+import { In, LessThan, MoreThan, MoreThanOrEqual, Repository } from 'typeorm';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PlaylistRefreshLog } from './playlist-refresh-log.entity';
-import { subHours } from 'date-fns';
+import { subMinutes } from 'date-fns';
 import { PlaylistRefreshStatus } from './playlist-refresh-status.enum';
 
 const maxTracksInSpotifyPlaylist = 30;
@@ -29,28 +29,38 @@ export class PlaylistRefreshService {
     @InjectRepository(PlaylistRefreshLog)
     private playlistRefreshLogRepository: Repository<PlaylistRefreshLog>,
   ) {}
-  // @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-  // Disabling auto-update as it is not reliable - possibly due to rate limits
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async handleSpotifyRefreshCron() {
-    // Ensure job only runs once even if multiple node processes
-    const oneHourAgo = subHours(new Date(), 1);
-    if (
-      await this.playlistRefreshLogRepository.exist({
-        where: {
-          createdAt: MoreThan(oneHourAgo),
-          status: In([
-            PlaylistRefreshStatus.Pending,
-            PlaylistRefreshStatus.Success,
-          ]),
-        },
-      })
-    ) {
-      return;
-    }
+    const tenMinAgo = subMinutes(new Date(), 10);
+
     const inserted = await this.playlistRefreshLogRepository.save({
       status: PlaylistRefreshStatus.Pending,
     });
     const logId = inserted.id;
+
+    // Ensure job only runs once even if multiple node processes
+    if (
+      (await this.playlistRefreshLogRepository.exist({
+        where: {
+          createdAt: MoreThan(tenMinAgo),
+          status: In([PlaylistRefreshStatus.Success]),
+        },
+      })) ||
+      (await this.playlistRefreshLogRepository.exist({
+        where: {
+          createdAt: MoreThan(tenMinAgo),
+          status: In([PlaylistRefreshStatus.Pending]),
+          id: LessThan(logId),
+        },
+      }))
+    ) {
+      await this.playlistRefreshLogRepository.update(
+        { id: logId },
+        { status: PlaylistRefreshStatus.Canceled },
+      );
+      return;
+    }
+
     let newStatus = PlaylistRefreshStatus.Error;
     try {
       await this.refreshSpotifyPlaylists();
