@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
-import { ILike, Repository } from 'typeorm';
+import { FindOptionsOrder, ILike, Repository } from 'typeorm';
 import { FederatedCredentials } from './federated-credentials.entity';
 import { AuthProviderEnum } from './auth-provider.enum';
 import { UserAuthDataDto } from '../auth/user-auth-data.dto';
@@ -70,13 +70,16 @@ export class UsersService {
     resultCount: number,
     page: number,
   ): Promise<UserSearchResultDto> {
+    const orderBy = (
+      username ? { username: 'asc' } : { id: 'desc' }
+    ) as FindOptionsOrder<User>;
     const result = await this.usersRepository.findAndCount({
       where: {
         username: ILike(`%${username}%`), // this is safe from sql injection
       },
       take: resultCount,
       skip: resultCount * page,
-      order: { username: 'asc' },
+      order: orderBy,
       withDeleted: true,
     });
     return {
