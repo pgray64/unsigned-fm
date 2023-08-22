@@ -14,7 +14,7 @@ import { PlaylistRefreshLog } from './playlist-refresh-log.entity';
 import { subMinutes } from 'date-fns';
 import { PlaylistRefreshStatus } from './playlist-refresh-status.enum';
 
-const maxTracksInSpotifyPlaylist = 30;
+const maxTracksInSpotifyPlaylist = 50;
 const minNetVotesForSpotifyPlaylist = 2;
 
 @Injectable()
