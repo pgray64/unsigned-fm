@@ -9,7 +9,7 @@ const props = defineProps({
 
 <template>
   <div
-    class="rounded overflow-hidden bg-light"
+    class="overflow-hidden"
     :class="[imageUrl ? '' : 'border']"
     :style="{ width: props.sizePx + 'px', height: props.sizePx + 'px' }"
   >
@@ -20,7 +20,8 @@ const props = defineProps({
         backgroundImage: `url(${imageUrl})`,
       }"
       style="
-        background-size: cover;
+        background-size: contain;
+        background-repeat: no-repeat;
         background-position: center;
         background-repeat: no-repeat;
         height: 100%;
