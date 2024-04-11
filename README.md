@@ -6,7 +6,7 @@
 ## Description
 
 UnsignedFM, formerly hosted at unsigned.fm, is crowdsourced playlist creation website - users submit songs and vote on them. The most popular (with time decay)
-auto-update Spotify playlists. It turned out to be a really dumb idea, as everyone just drops there songs, and never actually listens to the playlists.
+auto-update Spotify playlists. It turned out to be a really dumb idea, as everyone just drops their songs, and never actually listens to the playlists.
 
 ## Installation
 
